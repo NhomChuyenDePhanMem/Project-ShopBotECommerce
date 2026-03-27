@@ -9,22 +9,8 @@ Thu muc nop bai: `docs/design/`
 3. `erd.dbml` - Ma ERD dung cho dbdiagram.io.
 4. `schema.sql` - SQL schema gom CREATE TABLE + seed data.
 5. `design-patterns.md` - Danh sach design patterns + mo ta ngan.
+link ERD dbdiagram.io
 
-## Cach tao link ERD dbdiagram.io
+[dbdiagram.io]
+https://dbdiagram.io/d/69c5f5acfb2db18e3b17fe6c
 
-1. Mo [dbdiagram.io](https://dbdiagram.io).
-2. Tao diagram moi.
-3. Copy toan bo noi dung tu file `erd.dbml` vao.
-4. Luu va copy link public de nop (hoac chup screenshot).
-
-## Huong dan push len GitHub repo nhom
-
-```bash
-git clone https://github.com/NhomChuyenDePhanMem/Project-ShopBotECommerce.git
-cd Project-ShopBotECommerce
-mkdir -p docs/design
-# copy cac file trong thu muc docs/design cua ban vao day
-git add docs/design
-git commit -m "Add week 4 design deliverables for restaurant management mini project"
-git push origin main
-```

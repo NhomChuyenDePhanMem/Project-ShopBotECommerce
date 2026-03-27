@@ -2,7 +2,7 @@
 
 ## Kien truc de xuat: 3-Tier Architecture + Layered Monolith
 
-Kien truc 3 lop phu hop voi mini project vi de trien khai, de bao tri, va nhom co the phan chia cong viec ro rang:
+Kien truc 3 lop phu hop voi mini project vi de trien khai, de bao tri, nhom co the phan chia cong viec ro rang:
 
 - **Presentation Layer**: Web UI cho thu ngan, quan ly, va bep.
 - **Application Layer**: Backend API xu ly nghiep vu (don hang, ban, mon an, thanh toan, ton kho nhe).
@@ -44,7 +44,3 @@ flowchart LR
   - `Payment`: Ghi nhan thanh toan.
 - **Database**: Luu du lieu co cau truc va dam bao toan ven giao dich.
 
-## Huong dan xuat hinh de nop
-
-- Cach 1: Dung file nay va render Mermaid screenshot.
-- Cach 2: Ve lai tren draw.io theo dung luong do tren, xuat PNG va luu trong `docs/design/`.
