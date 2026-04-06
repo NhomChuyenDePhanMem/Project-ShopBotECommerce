@@ -35,6 +35,14 @@ Trong repo hiện có **hai mảng tài liệu**:
 
 **Kết luận:** Repo **chưa thuần một đề tài** — đang **lai** giữa bài **quán ăn** (thiết kế DB + Auth) và prototype **e-commerce + AI**. Để **đi đúng hướng đề quán ăn** (theo `docs/design/system-architecture.md`), nhóm cần: thay/refactor mock thành **categories / menu_items / dining_tables / reservations / orders** đúng schema; giữ hoặc tách SShopBot thành nhánh/tài liệu riêng nếu môn chỉ chấm quán ăn.
 
+## Bài tập cuối kỳ (nhóm)
+
+Theo đề bài môn: **PDF báo cáo** (≥20 trang, gợi ý 50–70) + **GitHub** (code chạy được, README, commit history, `.gitignore`) + **video YouTube** (public/unlisted). Hạn nộp nhóm theo đề: **trước 10/04/2026** (đối chiếu lại với thông báo lớp).
+
+- **Checklist chi tiết & cấu trúc chương:** [docs/cuoi-ky-de-bai.md](docs/cuoi-ky-de-bai.md)  
+- **Lưu ý:** đề ghi nhóm **3–5** người; README hiện liệt kê **6** thành viên — nên **hỏi giảng viên** nếu cần khớp quy định.  
+- **Phụ lục báo cáo:** link repo GitHub + link YouTube; **đầu mỗi chương** ghi thành viên tham gia (không ghi người không đóng góp).
+
 ## Danh sách thành viên
 
 | STT | MSSV       | Họ và Tên            |

@@ -1,5 +1,13 @@
 # Tài liệu dự án — mục lục
 
+## Bài tập cuối kỳ — yêu cầu & checklist
+
+| Mục | Mô tả |
+|-----|--------|
+| [cuoi-ky-de-bai.md](cuoi-ky-de-bai.md) | Cấu trúc báo cáo PDF, GitHub, YouTube, hạn nộp, map tài liệu → chương |
+
+---
+
 ## Thiết kế môn / mini project — **Quản lý quán ăn**
 
 | Mục | Mô tả |

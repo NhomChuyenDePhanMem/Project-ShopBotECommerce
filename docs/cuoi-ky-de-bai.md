@@ -1,0 +1,97 @@
+# Bài tập cuối kỳ — Yêu cầu & checklist (theo đề bài môn)
+
+> Trích và hệ thống hóa từ *Thông tin bài tập Giữa kỳ và Cuối kỳ* (PDF). Dùng file này để đối chiếu trước khi nộp.
+
+## 1. Yêu cầu tổng quan
+
+| Hạng mục | Nội dung |
+|----------|-----------|
+| **Quy mô nhóm** | **3–5** sinh viên (đã đăng ký). *Nhóm hiện có 6 thành viên trong README — cần xác nhận lại với giảng viên / điều chỉnh đăng ký nếu bắt buộc đúng 3–5.* |
+| **Đề tài** | Phát triển phần mềm theo đề tài nhóm **đã đăng ký**. |
+| **Nộp** | (1) GitHub repo đủ source, chạy được · (2) **Báo cáo PDF** · (3) **Video demo YouTube** |
+
+### Hạn nộp (theo đề)
+
+| Bài | Hạn |
+|-----|-----|
+| Giữa kỳ (cá nhân) | Trước **04/04/2026** |
+| **Cuối kỳ (nhóm)** | Trước **10/04/2026** — PDF + GitHub + YouTube |
+
+*Bài trễ có thể bị trừ điểm.*
+
+---
+
+## 2. Cấu trúc báo cáo PDF (đề xuất)
+
+| STT | Nội dung |
+|-----|-----------|
+| 1 | Trang bìa (trường, môn, nhóm, đề tài) |
+| 2 | Danh sách thành viên (họ tên, MSSV) + **phân công tổng quan** |
+| 3 | Mục lục |
+| 4 | **Chương 1:** Giới thiệu đề tài (mục tiêu, phạm vi, công nghệ) |
+| 5 | **Chương 2:** Phân tích yêu cầu (User Stories, Use Cases, Wireframe) |
+| 6 | **Chương 3:** Thiết kế (kiến trúc, ERD, CSDL) |
+| 7 | **Chương 4:** Phát triển (Frontend, Backend — ảnh chụp, trích code) |
+| 8 | **Chương 5:** Kiểm thử (test case, kết quả) |
+| 9 | **Chương 6:** Kết quả & hướng phát triển |
+| 10 | Tài liệu tham khảo |
+| 11 | **Phụ lục:** link GitHub, link YouTube demo |
+
+### Yêu cầu PDF
+
+- **Tối thiểu:** ≥ **20 trang**  
+- **Phù hợp:** khoảng **50–70 trang** (gồm mục lục, ảnh, bảng)  
+- **Nội dung:** mô tả rõ sản phẩm, cách làm, kết quả; **ảnh màn hình** theo chức năng  
+- **Đầu mỗi chương:** ghi **thành viên tham gia** và việc đã làm  
+
+### Ghi nhận đóng góp
+
+- Đầu báo cáo: bảng **tên + công việc chính**  
+- Đầu mỗi chương: ai làm phần nào (ví dụ: *Chương 4 — Nguyễn A: Backend API, Trần B: Frontend UI*)  
+- **Không ghi tên** thành viên không đóng góp chương đó  
+
+---
+
+## 3. GitHub Repository
+
+- [ ] Source **đầy đủ**, **chạy được** trên máy sạch (kèm hướng dẫn)  
+- [ ] **README.md:** mô tả dự án + **cài đặt & chạy** (root + `backend/README.md` nếu cần)  
+- [ ] **Commit history** thể hiện quá trình (nhiều commit có ý nghĩa, tránh 1 commit khổng lồ duy nhất)  
+- [ ] **Cấu trúc thư mục** rõ ràng (xem `README.md` gốc + `docs/README.md`)  
+- [ ] **`.gitignore`** loại `node_modules`, `.env`, build, IDE…  
+- [ ] **Phụ lục báo cáo:** dán **link repo**  
+
+---
+
+## 4. Video demo YouTube
+
+- [ ] Quay demo **phần mềm chạy thật**  
+- [ ] Upload **public** hoặc **unlisted**  
+- [ ] Nội dung gợi ý: giới thiệu nhóm + đề tài; demo **các chức năng chính**  
+- [ ] **Phụ lục báo cáo:** dán **link YouTube**  
+
+---
+
+## 5. Gợi ý map tài liệu có sẵn → các chương báo cáo
+
+| Chương | Có thể tái sử dụng / bổ sung từ repo |
+|--------|--------------------------------------|
+| 1 | `docs/design/system-architecture.md`, `docs/SShopBot_Design.md` — cần **chốt một đề tài** thống nhất với đăng ký |
+| 2 | `docs/01_User_Stories.md`, `docs/03_Wireframes_User_Flows.md`, `docs/02_Functional_Requirements.md` |
+| 3 | `docs/design/erd.dbml`, `schema.sql`, kiến trúc, `design-patterns.md` |
+| 4 | Ảnh Postman/Swagger, màn hình React, trích code Auth, v.v. |
+| 5 | `backend/test/*.e2e-spec.ts`, bảng test case thủ công + kết quả chạy |
+| Phụ lục | URL GitHub + YouTube |
+
+---
+
+## 6. Checklist nhanh trước khi nộp
+
+- [ ] PDF đủ trang, đủ chương, có ảnh, có phân công đầu chương  
+- [ ] Repo public (hoặc cấp quyền GV) + README chạy được  
+- [ ] Link GitHub + YouTube trong phụ lục  
+- [ ] Đúng hạn **10/04/2026** (theo đề)  
+
+---
+
+*File PDF gốc nên đặt trong repo (ví dụ `docs/course/thong-tin-bai-tap-giua-ky-va-cuoi-ky.pdf`) để cả nhóm cùng tham chiếu.*
