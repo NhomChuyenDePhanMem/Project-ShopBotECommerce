@@ -8,6 +8,15 @@
 
 ---
 
+## Đề tài đăng ký (ShopBot)
+
+| Mục | Mô tả |
+|-----|--------|
+| [de-tai/README.md](de-tai/README.md) | Mô tả ngắn + quy mô nhóm (6 TV, GV chấp nhận) |
+| [de-tai/shopbot-summary.docx](de-tai/shopbot-summary.docx) | File đề tài / tóm tắt nhóm |
+
+---
+
 ## Thiết kế môn / mini project — **Quản lý quán ăn**
 
 | Mục | Mô tả |

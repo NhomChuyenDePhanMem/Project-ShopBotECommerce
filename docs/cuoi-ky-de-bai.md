@@ -6,8 +6,8 @@
 
 | Hạng mục | Nội dung |
 |----------|-----------|
-| **Quy mô nhóm** | **3–5** sinh viên (đã đăng ký). *Nhóm hiện có 6 thành viên trong README — cần xác nhận lại với giảng viên / điều chỉnh đăng ký nếu bắt buộc đúng 3–5.* |
-| **Đề tài** | Phát triển phần mềm theo đề tài nhóm **đã đăng ký**. |
+| **Quy mô nhóm** | Đề bài môn ghi **3–5**; nhóm này **6** thành viên — **giảng viên đã chấp nhận**. |
+| **Đề tài** | Theo file đăng ký: [de-tai/shopbot-summary.docx](de-tai/shopbot-summary.docx) (cùng các tài liệu trong `docs/`). |
 | **Nộp** | (1) GitHub repo đủ source, chạy được · (2) **Báo cáo PDF** · (3) **Video demo YouTube** |
 
 ### Hạn nộp (theo đề)
