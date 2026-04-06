@@ -8,3 +8,7 @@ coverage/
 .vscode/
 backend/node_modules/
 frontend/node_modules/
+
+# Thư mục lồng / bản sao làm việc nhầm — không commit
+Project-ShopBotECommerce/
+1721031693_HUYNHMINHTIEN_SHOPBOT/
