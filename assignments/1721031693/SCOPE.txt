@@ -5,3 +5,8 @@ Phạm vi:
 - Module Auth: JWT, bcrypt, đăng nhập/đăng xuất.
 - Phân quyền theo bảng roles; middleware bảo vệ endpoint theo vai trò.
 - API/CRUD người dùng (users) theo quyền admin nếu có trong phạm vi đề tài.
+
+Đã triển khai trên nhánh feature/1721031693-auth-jwt-users:
+- backend: entity Role/User (TypeORM), AuthService + JWT Strategy, JwtAuthGuard, RolesGuard, @Roles('admin').
+- API: POST /api/auth/login, POST /api/auth/logout; GET /api/users/me; CRUD /api/users (admin).
+- Cấu hình: backend/.env.example, seed admin01 (xem backend/README.md).

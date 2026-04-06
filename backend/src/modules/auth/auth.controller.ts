@@ -1,21 +1,30 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  @Post('login')
-  login(@Body() body: { email?: string; password?: string }) {
-    if (!body.email || !body.password) {
-      throw new UnauthorizedException('Email or password is missing');
-    }
+  constructor(private readonly auth: AuthService) {}
 
-    return {
-      accessToken: 'mock_access_token_shopbot',
-      refreshToken: 'mock_refresh_token_shopbot',
-      user: {
-        id: 'u1',
-        email: body.email,
-        role: 'customer',
-      },
-    };
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  login(@Body() body: LoginDto) {
+    return this.auth.login(body);
+  }
+
+  /** Đăng xuất phía client: xóa token; endpoint xác nhận phiên hợp lệ (cần Bearer JWT). */
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  logout(): void {
+    return undefined;
   }
 }
