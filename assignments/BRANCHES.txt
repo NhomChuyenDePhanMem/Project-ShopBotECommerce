@@ -12,3 +12,4 @@ MSSV        | Nhánh git
 Mỗi thành viên: git fetch && git checkout <nhánh> && làm việc trong thư mục assignments/<MSSV>/ (ghi chú) và mã nguồn theo cấu trúc dự án (backend/, frontend/ khi đã tạo).
 
 Chi tiết + API auth: assignments/1721031693/SCOPE.txt. PostgreSQL: `docker compose up -d` tại root repo.
+Mục lục toàn bộ tài liệu (quán ăn vs SShopBot): docs/README.md
