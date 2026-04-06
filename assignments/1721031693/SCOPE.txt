@@ -1,0 +1,7 @@
+Huỳnh Minh Tiến — MSSV 1721031693
+Nhánh Git: feature/1721031693-auth-jwt-users
+
+Phạm vi:
+- Module Auth: JWT, bcrypt, đăng nhập/đăng xuất.
+- Phân quyền theo bảng roles; middleware bảo vệ endpoint theo vai trò.
+- API/CRUD người dùng (users) theo quyền admin nếu có trong phạm vi đề tài.

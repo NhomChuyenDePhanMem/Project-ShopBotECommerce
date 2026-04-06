@@ -1,0 +1,12 @@
+Bảng nhánh Git — khớp docs/phan-cong-nhom.pdf
+
+MSSV        | Nhánh git
+------------+--------------------------------------------------
+1721031099  | feature/1721031099-devops-docker-tables-reservations
+1721031693  | feature/1721031693-auth-jwt-users
+1721031203  | feature/1721031203-menu-api
+1721031524  | feature/1721031524-orders-order-items
+1721031448  | feature/1721031448-payments-cashier-frontend
+1721031423  | feature/1721031423-frontend-admin-kitchen-docs
+
+Mỗi thành viên: git fetch && git checkout <nhánh> && làm việc trong thư mục assignments/<MSSV>/ (ghi chú) và mã nguồn theo cấu trúc dự án (backend/, frontend/ khi đã tạo).

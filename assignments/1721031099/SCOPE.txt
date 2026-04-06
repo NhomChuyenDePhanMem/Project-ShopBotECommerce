@@ -1,0 +1,7 @@
+Vũ Đình Mạnh — MSSV 1721031099
+Nhánh Git: feature/1721031099-devops-docker-tables-reservations
+
+Phạm vi:
+- DevOps & nền tảng: Docker Compose, PostgreSQL, khởi tạo cấu trúc repo (backend/frontend).
+- Migration/seed từ docs/design/schema.sql; hướng dẫn môi trường chạy trên máy nhóm.
+- API quản lý bàn và đặt bàn: dining_tables, reservations.

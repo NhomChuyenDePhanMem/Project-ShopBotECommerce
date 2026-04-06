@@ -1,0 +1,6 @@
+Nguyễn Mai Quốc Khánh — MSSV 1721031448
+Nhánh Git: feature/1721031448-payments-cashier-frontend
+
+Phạm vi:
+- Module thanh toán: API payments (cash, card, transfer, e_wallet) gắn với order.
+- Frontend khu vực thu ngân: tạo đơn, chọn món, thanh toán, trạng thái bàn.

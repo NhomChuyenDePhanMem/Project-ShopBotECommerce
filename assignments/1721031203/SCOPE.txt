@@ -1,0 +1,6 @@
+Nguyễn Tiến Đạt — MSSV 1721031203
+Nhánh Git: feature/1721031203-menu-api
+
+Phạm vi:
+- Module Menu: API categories và menu_items (CRUD).
+- Xử lý trường is_available; liên kết với order_items khi tạo đơn.

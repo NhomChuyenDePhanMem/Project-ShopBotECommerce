@@ -1,0 +1,7 @@
+Trần Quang Huy — MSSV 1721031423
+Nhánh Git: feature/1721031423-frontend-admin-kitchen-docs
+
+Phạm vi:
+- Frontend quản lý: menu/danh mục, người dùng (nếu có màn hình).
+- Màn hình bếp: danh sách đơn theo trạng thái; màn hình đặt bàn / bàn.
+- README hướng dẫn cài đặt & chạy; hỗ trợ slide / kịch bản demo.
