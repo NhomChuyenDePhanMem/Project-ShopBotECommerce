@@ -74,12 +74,14 @@
 
 ## 5. Gợi ý map tài liệu có sẵn → các chương báo cáo
 
+**Đề tài chính:** ShopBot — `docs/de-tai/shopbot-summary.docx` + `docs/SShopBot_Design.md` + `docs/0x_*.md`. **Phụ lục CSDL quán ăn:** `docs/design/*` (dùng cho ERD/module bàn–menu–đơn; Auth backend khớp `schema.sql`).
+
 | Chương | Có thể tái sử dụng / bổ sung từ repo |
 |--------|--------------------------------------|
-| 1 | `docs/design/system-architecture.md`, `docs/SShopBot_Design.md` — cần **chốt một đề tài** thống nhất với đăng ký |
+| 1 | `docs/de-tai/shopbot-summary.docx`, `docs/SShopBot_Design.md` (mục tiêu, phạm vi, công nghệ); có thể trích `docs/design/system-architecture.md` nếu mô tả kiến trúc tổng thể |
 | 2 | `docs/01_User_Stories.md`, `docs/03_Wireframes_User_Flows.md`, `docs/02_Functional_Requirements.md` |
-| 3 | `docs/design/erd.dbml`, `schema.sql`, kiến trúc, `design-patterns.md` |
-| 4 | Ảnh Postman/Swagger, màn hình React, trích code Auth, v.v. |
+| 3 | ShopBot: sơ đồ trong `docs/06_AI_System_Diagrams.md`; CSDL: `docs/design/erd.dbml`, `docs/design/schema.sql`, `design-patterns.md` |
+| 4 | Ảnh Postman/Swagger, màn hình React, trích code Auth / API demo |
 | 5 | `backend/test/*.e2e-spec.ts`, bảng test case thủ công + kết quả chạy |
 | Phụ lục | URL GitHub + YouTube |
 
@@ -94,4 +96,4 @@
 
 ---
 
-*File PDF gốc nên đặt trong repo (ví dụ `docs/course/thong-tin-bai-tap-giua-ky-va-cuoi-ky.pdf`) để cả nhóm cùng tham chiếu.*
+*File PDF đề bài môn có thể đặt trong `docs/course/` (xem [course/README.md](course/README.md)) để cả nhóm cùng tham chiếu.*

@@ -10,6 +10,8 @@
 | **Tech Stack** | NestJS + PostgreSQL + React |
 | **Đối tượng** | Cộng đồng / Nhiều nhóm người dùng (Người mua, Người bán, Quản trị viên) |
 
+**Đề tài đăng ký (môn học):** *ShopBot* — file chính thức [de-tai/shopbot-summary.docx](de-tai/shopbot-summary.docx). Trong các tài liệu chi tiết (`00_`–`06_*.md`), tên **SShopBot** là tên gọi nền tảng; cùng một hướng sản phẩm với đề tài.
+
 ---
 
 ## 1. Giới thiệu Dự án

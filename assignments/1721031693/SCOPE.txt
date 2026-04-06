@@ -1,5 +1,6 @@
 Huỳnh Minh Tiến — MSSV 1721031693
 Nhánh Git: feature/1721031693-auth-jwt-users
+Đề tài nhóm: ShopBot — docs/de-tai/shopbot-summary.docx | Tài liệu: docs/README.md | assignments/README.md
 
 Phạm vi:
 - Module Auth: JWT, bcrypt, đăng nhập/đăng xuất.

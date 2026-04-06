@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Generates docs/phan-cong-nhom.pdf — bảng phân công nhóm.
+Generates docs/phan-cong-nhom.pdf — bảng phân công nhóm ShopBot E-Commerce.
 Requires: pip install fpdf2
 """
 from pathlib import Path

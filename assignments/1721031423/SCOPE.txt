@@ -1,5 +1,6 @@
 Trần Quang Huy — MSSV 1721031423
 Nhánh Git: feature/1721031423-frontend-admin-kitchen-docs
+Đề tài nhóm: ShopBot — docs/de-tai/shopbot-summary.docx | Tài liệu: docs/README.md | assignments/README.md
 
 Phạm vi:
 - Frontend quản lý: menu/danh mục, người dùng (nếu có màn hình).

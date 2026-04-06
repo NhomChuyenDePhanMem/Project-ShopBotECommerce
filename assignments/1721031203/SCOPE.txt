@@ -1,5 +1,6 @@
 Nguyễn Tiến Đạt — MSSV 1721031203
 Nhánh Git: feature/1721031203-menu-api
+Đề tài nhóm: ShopBot — docs/de-tai/shopbot-summary.docx | Tài liệu: docs/README.md | assignments/README.md
 
 Phạm vi:
 - Module Menu: API categories và menu_items (CRUD).

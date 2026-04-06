@@ -1,6 +1,8 @@
-# System Architecture Diagram - Mini Project Quan ly Quan An
+# System Architecture Diagram — Mini project Quản lý quán ăn
 
-## Kien truc de xuat: 3-Tier Architecture + Layered Monolith
+> **Phụ lục** trong repo **ShopBot E-Commerce** (đề tài: [de-tai/shopbot-summary.docx](../de-tai/shopbot-summary.docx)). Mục lục tài liệu: [docs/README.md](../README.md).
+
+## Kiến trúc đề xuất: 3-Tier Architecture + Layered Monolith
 
 Kien truc 3 lop phu hop voi mini project vi de trien khai, de bao tri, nhom co the phan chia cong viec ro rang:
 

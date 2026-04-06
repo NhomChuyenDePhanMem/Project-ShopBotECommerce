@@ -1,5 +1,6 @@
 Vũ Đình Mạnh — MSSV 1721031099
 Nhánh Git: feature/1721031099-devops-docker-tables-reservations
+Đề tài nhóm: ShopBot — docs/de-tai/shopbot-summary.docx | Tài liệu: docs/README.md | assignments/README.md
 
 Phạm vi:
 - DevOps & nền tảng: Docker Compose, PostgreSQL, khởi tạo cấu trúc repo (backend/frontend).

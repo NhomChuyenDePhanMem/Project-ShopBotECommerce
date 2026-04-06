@@ -1,5 +1,6 @@
 Nguyễn Viết Quốc Anh — MSSV 1721031524
 Nhánh Git: feature/1721031524-orders-order-items
+Đề tài nhóm: ShopBot — docs/de-tai/shopbot-summary.docx | Tài liệu: docs/README.md | assignments/README.md
 
 Phạm vi:
 - Module đơn hàng: API orders + order_items, giao dịch DB (transaction).

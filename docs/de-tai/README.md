@@ -4,6 +4,6 @@
 |------|--------|
 | [shopbot-summary.docx](shopbot-summary.docx) | Tóm tắt / mô tả đề tài chính thức nhóm (nộp theo yêu cầu GV). |
 
-**Quy mô nhóm:** 6 thành viên — **giảng viên đã chấp nhận** (khác khung 3–5 người trong đề bài môn chung).
+**Quy mô nhóm:** 6 thành viên — **giảng viên đã chấp nhận** (đề môn chung ghi 3–5).
 
-Các tài liệu chi tiết (user story, wireframe, ERD, v.v.) nằm ở [docs/README.md](../README.md).
+**Tài liệu kỹ thuật & báo cáo:** [docs/README.md](../README.md) — trục chính *ShopBot* / *SShopBot*; phụ lục *Quản lý quán ăn* trong `docs/design/` (khớp Auth + phân công nhánh Git).
