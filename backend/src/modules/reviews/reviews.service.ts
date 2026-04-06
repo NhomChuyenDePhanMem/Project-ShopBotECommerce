@@ -7,7 +7,12 @@ export class ReviewsService {
     return mockReviews.filter((item) => item.productId === productId);
   }
 
-  create(input: { userId: string; productId: string; rating: number; comment: string }) {
+  create(input: {
+    userId: string;
+    productId: string;
+    rating: number;
+    comment: string;
+  }) {
     const review: Review = {
       id: `r${mockReviews.length + 1}`,
       userId: input.userId,

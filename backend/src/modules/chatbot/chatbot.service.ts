@@ -14,7 +14,12 @@ Ban la tro ly tu van cua ShopBot.
 - Khuyen nghi ngan gon, ro rang, uu tien ngan sach cua nguoi dung.
 `.trim();
 
-const BLOCKED_PATTERNS = [/hack/i, /sql\s*injection/i, /bypass/i, /danhsach\s*the\s*tin\s*dung/i];
+const BLOCKED_PATTERNS = [
+  /hack/i,
+  /sql\s*injection/i,
+  /bypass/i,
+  /danhsach\s*the\s*tin\s*dung/i,
+];
 const MAX_SESSION_BUDGET_TOKENS = 4_000;
 
 @Injectable()
@@ -30,7 +35,9 @@ export class ChatbotService {
   }
 
   private getOrCreateSession(sessionId?: string) {
-    const existing = sessionId ? mockChatSessions.find((item) => item.id === sessionId) : undefined;
+    const existing = sessionId
+      ? mockChatSessions.find((item) => item.id === sessionId)
+      : undefined;
     if (existing) {
       return existing;
     }
@@ -45,7 +52,9 @@ export class ChatbotService {
   }
 
   private getSessionContext(sessionId: string) {
-    const messages = mockChatMessages.filter((item) => item.sessionId === sessionId);
+    const messages = mockChatMessages.filter(
+      (item) => item.sessionId === sessionId,
+    );
     const reversed = [...messages].reverse();
     const selected: typeof messages = [];
     let tokens = 0;
@@ -69,7 +78,7 @@ export class ChatbotService {
     };
   }
 
-  private replyRuleBased(message: string) {
+  private async replyRuleBased(message: string) {
     const normalized = message.toLowerCase();
     const budgetMatch = normalized.match(/(\d{1,3})(tr|m|k)/);
 
@@ -77,16 +86,23 @@ export class ChatbotService {
       const value = Number(budgetMatch[1]);
       const unit = budgetMatch[2];
       const budget =
-        unit === 'tr' ? value * 1_000_000 : unit === 'm' ? value * 1_000_000 : value * 1_000;
+        unit === 'tr'
+          ? value * 1_000_000
+          : unit === 'm'
+            ? value * 1_000_000
+            : value * 1_000;
 
-      const products = this.productsService.findTopByBudget(budget);
+      const products = await this.productsService.findTopByBudget(budget);
       return {
         text: `Muc ngan sach ${budget.toLocaleString('vi-VN')} VND co ${products.length} goi y phu hop.`,
         products,
       };
     }
 
-    const products = this.productsService.findAll({ q: message }).slice(0, 3);
+    const products = (await this.productsService.findAll({ q: message })).slice(
+      0,
+      3,
+    );
     if (products.length > 0) {
       return {
         text: 'Minh da tim thay mot so san pham lien quan. Ban muon so sanh chi tiet khong?',
@@ -100,7 +116,7 @@ export class ChatbotService {
     };
   }
 
-  reply(message: string, sessionId?: string) {
+  async reply(message: string, sessionId?: string) {
     const session = this.getOrCreateSession(sessionId);
     const questionTokens = this.estimateTokens(message);
 
@@ -144,7 +160,7 @@ export class ChatbotService {
           text: 'AI tam thoi khong kha dung. He thong dang fallback sang tu van rule-based.',
           products: [],
         }
-      : this.replyRuleBased(message);
+      : await this.replyRuleBased(message);
 
     const assistantText = `${aiResponse.text}\n\n[system] ${SYSTEM_PROMPT}`;
     mockChatMessages.push({
@@ -165,7 +181,9 @@ export class ChatbotService {
       budget: {
         maxTokens: MAX_SESSION_BUDGET_TOKENS,
         usedTokens:
-          totalSessionTokens + questionTokens + this.estimateTokens(assistantText),
+          totalSessionTokens +
+          questionTokens +
+          this.estimateTokens(assistantText),
       },
     };
   }

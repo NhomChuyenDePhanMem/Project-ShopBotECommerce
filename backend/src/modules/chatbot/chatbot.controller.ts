@@ -18,7 +18,7 @@ export class ChatbotController {
 
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('messages')
-  sendMessage(@Body() body: { message?: string; sessionId?: string }) {
+  async sendMessage(@Body() body: { message?: string; sessionId?: string }) {
     const content = body.message?.trim() ?? '';
     if (!content) {
       return { text: 'Noi dung tin nhan khong duoc de trong.', products: [] };

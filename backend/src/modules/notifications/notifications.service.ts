@@ -19,7 +19,9 @@ export class NotificationsService {
   }
 
   markRead(notificationId: string) {
-    const notification = mockNotifications.find((item) => item.id === notificationId);
+    const notification = mockNotifications.find(
+      (item) => item.id === notificationId,
+    );
     if (!notification) {
       throw new NotFoundException('Notification not found');
     }

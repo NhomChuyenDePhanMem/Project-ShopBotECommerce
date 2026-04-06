@@ -20,7 +20,13 @@ export type Order = {
   id: string;
   orderCode: string;
   userId: string;
-  status: 'pending' | 'confirmed' | 'packing' | 'shipping' | 'done' | 'cancelled';
+  status:
+    | 'pending'
+    | 'confirmed'
+    | 'packing'
+    | 'shipping'
+    | 'done'
+    | 'cancelled';
   total: number;
   createdAt: string;
 };

@@ -14,6 +14,9 @@ import { ChatbotModule } from './modules/chatbot/chatbot.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { DiningTablesModule } from './modules/dining-tables/dining-tables.module';
+import { ReservationsModule } from './modules/reservations/reservations.module';
+import { MenuModule } from './modules/menu/menu.module';
 
 @Module({
   imports: [
@@ -37,7 +40,8 @@ import { PaymentsModule } from './modules/payments/payments.module';
         password: configService.get<string>('DB_PASSWORD', 'postgres'),
         database: configService.get<string>('DB_DATABASE', 'sshopbot'),
         autoLoadEntities: true,
-        synchronize: configService.get<string>('TYPEORM_SYNC', 'true') === 'true',
+        synchronize:
+          configService.get<string>('TYPEORM_SYNC', 'true') === 'true',
       }),
       inject: [ConfigService],
     }),
@@ -47,6 +51,9 @@ import { PaymentsModule } from './modules/payments/payments.module';
     ProductsModule,
     OrdersModule,
     PaymentsModule,
+    MenuModule,
+    DiningTablesModule,
+    ReservationsModule,
     ReviewsModule,
     NotificationsModule,
     ChatbotModule,

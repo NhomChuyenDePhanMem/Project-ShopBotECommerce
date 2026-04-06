@@ -1,34 +1,31 @@
-# Frontend — ShopBot E-Commerce (React + TypeScript + Vite)
+# Frontend - ShopBot Restaurant Dashboard (React + TypeScript + Vite)
 
-Giao diện web cho nền tảng **ShopBot** (TMĐT + chatbot). Đề tài: [docs/de-tai/shopbot-summary.docx](../docs/de-tai/shopbot-summary.docx). Chạy cả dự án: [README gốc](../README.md).
+Frontend hien tai la dashboard van hanh nha hang, goi API tu backend NestJS.
 
-## Chạy local
+## Tinh nang man hinh
+
+- `Menu & Danh muc`: CRUD danh muc + them/xoa menu item.
+- `Man hinh bep`: hien thi don theo trang thai (`pending`, `processing`, `served`, `paid`, `cancelled`) va doi trang thai don.
+- `Ban & Dat ban`: danh sach ban + doi trang thai ban + tao/doi trang thai dat ban.
+- `Nguoi dung`: dang nhap admin de goi `users API`, tao user, xoa user.
+
+## Chay local
 
 ```bash
 npm install
 npm run dev
 ```
 
-Mặc định gọi API tại `http://localhost:3000/api`. Đổi bằng biến môi trường:
+Mac dinh goi API tai `http://localhost:3000/api`.
 
 ```bash
 # Windows PowerShell
 $env:VITE_API_BASE_URL="http://localhost:3000/api"; npm run dev
 ```
 
-## Build
+## Build va lint
 
 ```bash
 npm run build
-npm run preview   # xem bản build
-```
-
-## Lint
-
-```bash
 npm run lint
 ```
-
----
-
-Template gốc: [Vite + React](https://vite.dev/). Cấu hình ESLint mở rộng: xem [ESLint React](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md).

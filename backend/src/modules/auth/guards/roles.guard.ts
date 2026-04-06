@@ -20,7 +20,9 @@ export class RolesGuard implements CanActivate {
     if (!required?.length) {
       return true;
     }
-    const request = context.switchToHttp().getRequest<{ user?: AuthUserPayload }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<{ user?: AuthUserPayload }>();
     const user = request.user;
     if (!user?.role) {
       throw new ForbiddenException('Thiếu thông tin vai trò');

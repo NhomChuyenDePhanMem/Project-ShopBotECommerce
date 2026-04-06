@@ -59,7 +59,9 @@ export class UsersService {
     return this.toSafeUser(user);
   }
 
-  async create(dto: CreateUserDto): Promise<ReturnType<UsersService['toSafeUser']>> {
+  async create(
+    dto: CreateUserDto,
+  ): Promise<ReturnType<UsersService['toSafeUser']>> {
     const exists = await this.users.exist({
       where: { username: dto.username.trim() },
     });
