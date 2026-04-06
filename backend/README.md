@@ -27,15 +27,17 @@
 
 ## SShopBot — Auth & cơ sở dữ liệu
 
-1. Sao chép `backend/.env.example` thành `.env`, đảm bảo PostgreSQL chạy và có database đúng `DB_DATABASE`.
+1. PostgreSQL: ở **root repo** chạy `docker compose up -d` (file `docker-compose.yml`), hoặc dùng instance có sẵn. Sao chép `backend/.env.example` → `backend/.env` (mặc định khớp Docker: `DB_HOST=localhost`, `DB_DATABASE=sshopbot`, user/pass `postgres`).
 2. Lần đầu với DB rỗng: seed tạo các role `admin`, `cashier`, `kitchen_staff` và tài khoản `SEED_ADMIN_USERNAME` (mặc định `admin01` / `SEED_ADMIN_PASSWORD` mặc định `Admin@123`).
 3. API:
    - `POST /api/auth/login` — body `{ "username": "...", "password": "..." }` → `{ accessToken, user }`.
    - `Authorization: Bearer <accessToken>` cho các route được bảo vệ.
    - `GET /api/users/me` — thông tin user hiện tại.
+   - `GET /api/users/roles` — danh sách `{ id, name }` cho admin (chọn `roleId` khi tạo user).
    - `GET` / `POST` / `GET :id` / `PATCH` / `DELETE` trên `/api/users` — chỉ user có `role` là `admin`.
    - `POST /api/auth/logout` — cần JWT, trả `204`.
 4. Các API demo (sản phẩm, đơn hàng, …) vẫn mở, không bắt JWT.
+5. E2E (cần Postgres đang chạy và `.env`): trong thư mục `backend/` chạy `npm run test:e2e` — gồm `app.e2e-spec.ts` và `auth.e2e-spec.ts`.
 
 ## Project setup
 

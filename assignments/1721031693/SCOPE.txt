@@ -8,5 +8,6 @@ Phạm vi:
 
 Đã triển khai trên nhánh feature/1721031693-auth-jwt-users:
 - backend: entity Role/User (TypeORM), AuthService + JWT Strategy, JwtAuthGuard, RolesGuard, @Roles('admin').
-- API: POST /api/auth/login, POST /api/auth/logout; GET /api/users/me; CRUD /api/users (admin).
-- Cấu hình: backend/.env.example, seed admin01 (xem backend/README.md).
+- API: POST /api/auth/login, POST /api/auth/logout; GET /api/users/me; GET /api/users/roles (admin); CRUD /api/users (admin).
+- Cấu hình: backend/.env.example, seed admin01 (xem backend/README.md); PostgreSQL: docker compose ở root repo.
+- Kiểm thử: backend/test/auth.e2e-spec.ts + app.e2e-spec.ts (`npm run test:e2e`, cần DB).

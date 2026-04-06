@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
+import { Role } from '../../database/entities/role.entity';
 import { User } from '../../database/entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -15,7 +16,17 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly users: Repository<User>,
+    @InjectRepository(Role)
+    private readonly roles: Repository<Role>,
   ) {}
+
+  async listRoles(): Promise<{ id: number; name: string }[]> {
+    const rows = await this.roles.find({
+      order: { id: 'ASC' },
+      select: ['id', 'name'],
+    });
+    return rows.map((r) => ({ id: r.id, name: r.name }));
+  }
 
   toSafeUser(user: User) {
     return {

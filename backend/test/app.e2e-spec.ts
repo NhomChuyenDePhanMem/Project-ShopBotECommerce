@@ -1,25 +1,33 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { AppModule } from './../src/app.module';
+import { createE2eApp } from './setup-app';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+  jest.setTimeout(90_000);
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
+  beforeAll(async () => {
+    app = await createE2eApp();
   });
 
-  it('/ (GET)', () => {
+  afterAll(async () => {
+    if (app) {
+      await app.close();
+    }
+  });
+
+  it('GET /api — health JSON', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/api')
       .expect(200)
-      .expect('Hello World!');
+      .expect((res) => {
+        expect(res.body).toMatchObject({
+          project: 'ShopBot API',
+          status: 'ok',
+        });
+        expect(res.body.timestamp).toBeDefined();
+      });
   });
 });

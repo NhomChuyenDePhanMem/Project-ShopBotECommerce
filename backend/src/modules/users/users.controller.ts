@@ -33,6 +33,13 @@ export class UsersController {
     };
   }
 
+  /** Danh sách role (để admin chọn roleId khi tạo/sửa user). Đặt trước :id để không bị nuốt path. */
+  @Get('roles')
+  @Roles('admin')
+  listRoles() {
+    return this.users.listRoles();
+  }
+
   @Get()
   @Roles('admin')
   findAll() {

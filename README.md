@@ -1,5 +1,10 @@
 # ProjectShopBotEcommerce
 
+## Làm việc với repo
+
+- Clone xong, mở **thư mục gốc** có `.git`, `backend/`, `frontend/`, `assignments/`. Tránh làm việc trong bản copy lồng `Project-ShopBotECommerce/Project-ShopBotECommerce/` (nếu thấy hai tầng trùng tên thì chỉ giữ một bản).
+- PostgreSQL nhanh: tại root repo chạy `docker compose up -d`, rồi cấu hình `backend/.env` (xem `backend/.env.example`).
+
 ## Danh sách thành viên
 
 | STT | MSSV       | Họ và Tên            |
