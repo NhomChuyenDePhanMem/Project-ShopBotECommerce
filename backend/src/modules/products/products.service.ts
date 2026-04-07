@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from '../../database/entities/category.entity';
-import { MenuItem } from '../../database/entities/menu-item.entity';
+import { Product } from '../../database/entities/product.entity';
 
 type ProductQuery = {
   category?: string;
@@ -18,8 +18,8 @@ export class ProductsService {
   constructor(
     @InjectRepository(Category)
     private readonly categories: Repository<Category>,
-    @InjectRepository(MenuItem)
-    private readonly menuItems: Repository<MenuItem>,
+    @InjectRepository(Product)
+    private readonly products: Repository<Product>,
   ) {}
 
   async listCategories() {
@@ -31,14 +31,23 @@ export class ProductsService {
     }));
   }
 
-  private toProductView(item: MenuItem) {
+  private toProductView(item: Product) {
     const price = Number(item.price);
+    const text = `${item.name} ${item.description ?? ''}`.toLowerCase();
+    const brand =
+      text.includes('iphone') || text.includes('airpods')
+        ? 'Apple'
+        : text.includes('samsung')
+          ? 'Samsung'
+          : text.includes('asus')
+            ? 'Asus'
+            : 'ShopBot';
     return {
       id: String(item.id),
       name: item.name,
-      brand: 'Kitchen',
+      brand,
       categoryId: String(item.categoryId),
-      sellerId: 'internal',
+      sellerId: 's1',
       price,
       rating: item.isAvailable ? 4.5 : 0,
       stockQty: item.isAvailable ? 99 : 0,
@@ -49,37 +58,44 @@ export class ProductsService {
   }
 
   async findAll(query: ProductQuery) {
-    const rows = await this.menuItems.find({
-      relations: ['category'],
-      order: { id: 'ASC' },
-    });
+    const qb = this.products
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.category', 'c')
+      .orderBy('p.id', 'ASC');
 
+    if (query.category?.trim()) {
+      const categoryId = Number.parseInt(query.category, 10);
+      if (!Number.isNaN(categoryId)) {
+        qb.andWhere('p.categoryId = :categoryId', { categoryId });
+      }
+    }
+    const kw = query.q?.trim();
+    if (kw) {
+      const like = `%${kw.toLowerCase()}%`;
+      qb.andWhere(
+        '(LOWER(p.name) LIKE :like OR LOWER(COALESCE(p.description, :empty)) LIKE :like)',
+        { like, empty: '' },
+      );
+    }
+    if (query.minPrice !== undefined && !Number.isNaN(query.minPrice)) {
+      qb.andWhere('CAST(p.price AS DECIMAL) >= :minPrice', {
+        minPrice: query.minPrice,
+      });
+    }
+    if (query.maxPrice !== undefined && !Number.isNaN(query.maxPrice)) {
+      qb.andWhere('CAST(p.price AS DECIMAL) <= :maxPrice', {
+        maxPrice: query.maxPrice,
+      });
+    }
+
+    const rows = await qb.getMany();
     const normalized = rows.map((row) => this.toProductView(row));
     return normalized.filter((item) => {
-      const byCategory = query.category
-        ? item.categoryId === query.category
-        : true;
       const bySeller = query.sellerId ? item.sellerId === query.sellerId : true;
       const byBrand = query.brand
         ? item.brand.toLowerCase() === query.brand.toLowerCase()
         : true;
-      const byKeyword = query.q
-        ? `${item.name} ${item.description}`
-            .toLowerCase()
-            .includes(query.q.toLowerCase())
-        : true;
-      const byMinPrice =
-        query.minPrice !== undefined ? item.price >= query.minPrice : true;
-      const byMaxPrice =
-        query.maxPrice !== undefined ? item.price <= query.maxPrice : true;
-      return (
-        byCategory &&
-        bySeller &&
-        byBrand &&
-        byKeyword &&
-        byMinPrice &&
-        byMaxPrice
-      );
+      return bySeller && byBrand;
     });
   }
 

@@ -19,13 +19,8 @@ export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @Get('categories')
-  findAllCategories() {
-    return this.menuService.findAllCategories();
-  }
-
-  @Get('categories/:id')
-  findCategoryById(@Param('id') id: string) {
-    return this.menuService.findCategoryById(id);
+  listCategories() {
+    return this.menuService.listCategories();
   }
 
   @Post('categories')
@@ -39,35 +34,27 @@ export class MenuController {
   }
 
   @Delete('categories/:id')
-  removeCategory(@Param('id') id: string) {
-    return this.menuService.removeCategory(id);
+  deleteCategory(@Param('id') id: string) {
+    return this.menuService.deleteCategory(id);
   }
 
-  @Get('menu-items')
-  findAllMenuItems(
-    @Query('categoryId') categoryId?: string,
-    @Query('isAvailable') isAvailable?: string,
-  ) {
-    return this.menuService.findAllMenuItems(categoryId, isAvailable);
+  @Get('items')
+  listItems(@Query('category') category?: string) {
+    return this.menuService.listItems(category);
   }
 
-  @Get('menu-items/:id')
-  findMenuItemById(@Param('id') id: string) {
-    return this.menuService.findMenuItemById(id);
+  @Post('items')
+  createItem(@Body() dto: CreateMenuItemDto) {
+    return this.menuService.createItem(dto);
   }
 
-  @Post('menu-items')
-  createMenuItem(@Body() dto: CreateMenuItemDto) {
-    return this.menuService.createMenuItem(dto);
+  @Patch('items/:id')
+  updateItem(@Param('id') id: string, @Body() dto: UpdateMenuItemDto) {
+    return this.menuService.updateItem(id, dto);
   }
 
-  @Patch('menu-items/:id')
-  updateMenuItem(@Param('id') id: string, @Body() dto: UpdateMenuItemDto) {
-    return this.menuService.updateMenuItem(id, dto);
-  }
-
-  @Delete('menu-items/:id')
-  removeMenuItem(@Param('id') id: string) {
-    return this.menuService.removeMenuItem(id);
+  @Delete('items/:id')
+  deleteItem(@Param('id') id: string) {
+    return this.menuService.deleteItem(id);
   }
 }

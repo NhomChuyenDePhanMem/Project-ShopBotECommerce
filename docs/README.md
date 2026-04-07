@@ -36,17 +36,17 @@ Trong repo, tên **SShopBot** là tên nền tảng dùng trong các file phân 
 
 ---
 
-## Phụ lục — mini project *Quản lý quán ăn*
+## Thiết kế CSDL & kiến trúc triển khai
 
-Dùng cho bài tập tuần / thiết kế CSDL nghiệp vụ quán (bàn, menu, đơn, thanh toán). **Backend Auth** hiện dùng `users` / `roles` khớp `schema.sql` dưới đây.
+Mô hình PostgreSQL và sơ đồ kiến trúc cho **ShopBot ecommerce** (catalog `menu_items` / đơn / thanh toán). Khớp `backend` TypeORM và script `npm run db:init`.
 
 | Mục | Mô tả |
 |-----|--------|
-| [design/README.md](design/README.md) | Danh sách deliverables & link ERD |
+| [design/README.md](design/README.md) | Mục lục thư mục design |
 | [design/system-architecture.md](design/system-architecture.md) | Kiến trúc 3-tier, module |
 | [design/erd.dbml](design/erd.dbml) | ERD (dbdiagram.io) |
-| [design/schema.sql](design/schema.sql) | PostgreSQL schema + seed |
-| [design/design-patterns.md](design/design-patterns.md) | Design patterns áp dụng |
+| [design/schema.sql](design/schema.sql) | PostgreSQL schema baseline |
+| [design/design-patterns.md](design/design-patterns.md) | Design patterns tham chiếu |
 
 ---
 
@@ -57,4 +57,3 @@ Dùng cho bài tập tuần / thiết kế CSDL nghiệp vụ quán (bàn, menu,
 | [generate-phan-cong-pdf.py](generate-phan-cong-pdf.py) | Sinh PDF phân công nhóm |
 | [phan-cong-nhom.pdf](phan-cong-nhom.pdf) | Bảng phân công |
 | [course/README.md](course/README.md) | Gợi ý lưu PDF đề bài môn (nếu cần) |
-| `Doc1.docx` | Tài liệu đính kèm (nếu dùng) |

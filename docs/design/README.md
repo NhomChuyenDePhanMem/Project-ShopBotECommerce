@@ -1,16 +1,18 @@
-# Mini project — Quản lý quán ăn (phụ lục thiết kế)
+# Thiết kế CSDL & kiến trúc — ShopBot E-Commerce
 
-Thư mục nộp bài / tài liệu thiết kế: `docs/design/`
+Thư mục `docs/design/` mô tả **mô hình dữ liệu và kiến trúc** của hệ thống thương mại điện tử trong repo (NestJS + PostgreSQL).
 
-Đây là **phụ lục** trong repo **ShopBot E-Commerce**: mô hình nghiệp vụ quán (thu ngân, bếp, bàn, menu, đơn, thanh toán). Module **Auth** của backend dùng bảng `users`, `roles` tương thích `schema.sql` (vai trò `admin`, `cashier`, `kitchen_staff`). Các API nghiệp vụ quán đang được triển khai dần theo phân công nhánh Git — xem [assignments/BRANCHES.txt](../../assignments/BRANCHES.txt).
+- **Vai trò người dùng** trong `schema.sql` / seed: `admin`, `seller`, `customer`.
+- **Bảng `menu_items`**: lưu danh mục sản phẩm (trong code map sang entity `Product`); `order_items.menu_item_id` là khóa ngoại tương ứng `productId`.
 
 ## Danh sách file
 
-1. `system-architecture.md` — Sơ đồ kiến trúc hệ thống + lý do chọn.
-2. `system-architecture.drawio` — File draw.io để mở / chỉnh / xuất PNG.
-3. `erd.dbml` — Mã ERD cho dbdiagram.io.
-4. `schema.sql` — SQL: `CREATE TABLE` + seed.
-5. `design-patterns.md` — Design patterns + mô tả ngắn.
+1. `system-architecture.md` — Kiến trúc 3 lớp, module backend.
+2. `system-architecture.drawio` — Bản vẽ draw.io (có thể cập nhật cho khớp sơ đồ mới).
+3. `erd.dbml` — ERD cho dbdiagram.io.
+4. `schema.sql` — `CREATE TABLE` baseline (chạy qua `backend` → `npm run db:init`).
+5. `design-patterns.md` — Gợi ý design pattern (tham chiếu module thực tế trong code).
 
-**Link ERD (dbdiagram.io):**  
-https://dbdiagram.io/d/69c5f5acfb2db18e3b17fe6c
+**Vận hành CSDL (bảo mật, hiệu năng, backup, scale):** xem [`../database.md`](../database.md).
+
+**Link ERD (dbdiagram.io)** có thể tạo lại từ nội dung `erd.dbml` hiện tại.

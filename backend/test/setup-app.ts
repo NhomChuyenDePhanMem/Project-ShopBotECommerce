@@ -1,23 +1,16 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
+import { configureHttpApp } from '../src/bootstrap/configure-app';
 
-/** Giống main.ts: prefix api + ValidationPipe (dùng cho e2e). */
+/** Keep in sync with `src/main.ts` global setup. */
 export async function createE2eApp(): Promise<INestApplication> {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
 
   const app = moduleFixture.createNestApplication();
-  app.enableCors();
-  app.setGlobalPrefix('api');
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+  configureHttpApp(app);
   await app.init();
   return app;
 }

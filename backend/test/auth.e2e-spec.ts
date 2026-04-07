@@ -8,7 +8,7 @@ import { createE2eApp } from './setup-app';
  * và file backend/.env khớp DB (mặc định giống docker-compose).
  */
 describe('Auth & users (e2e)', () => {
-  let app: INestApplication<App>;
+  let app: INestApplication;
 
   const adminUser = process.env.SEED_ADMIN_USERNAME ?? 'admin01';
   const adminPass = process.env.SEED_ADMIN_PASSWORD ?? 'Admin@123';
@@ -26,57 +26,69 @@ describe('Auth & users (e2e)', () => {
   });
 
   it('POST /api/auth/login — 401 khi sai mật khẩu', () => {
-    return request(app.getHttpServer())
+    const server = app.getHttpServer() as unknown as App;
+
+    return request(server)
       .post('/api/auth/login')
       .send({ username: adminUser, password: 'wrong-password-xyz' })
       .expect(401);
   });
 
   it('POST /api/auth/login — 200 và accessToken', async () => {
-    const res = await request(app.getHttpServer())
+    const server = app.getHttpServer() as unknown as App;
+    const res = await request(server)
       .post('/api/auth/login')
       .send({ username: adminUser, password: adminPass })
       .expect(200);
 
-    expect(res.body.accessToken).toBeDefined();
-    expect(res.body.user?.username).toBe(adminUser);
-    expect(res.body.user?.role).toBe('admin');
+    const body = res.body as {
+      accessToken: string;
+      user?: { id: number; username: string; role: string };
+    };
+
+    expect(body.accessToken).toBeDefined();
+    expect(body.user?.username).toBe(adminUser);
+    expect(body.user?.role).toBe('admin');
   });
 
   it('GET /api/users/me — cần Bearer', async () => {
-    const login = await request(app.getHttpServer())
+    const server = app.getHttpServer() as unknown as App;
+    const login = await request(server)
       .post('/api/auth/login')
       .send({ username: adminUser, password: adminPass })
       .expect(200);
 
-    const token = login.body.accessToken as string;
+    const token = (login.body as { accessToken: string }).accessToken;
 
-    const me = await request(app.getHttpServer())
+    const me = await request(server)
       .get('/api/users/me')
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
-    expect(me.body.username).toBe(adminUser);
-    expect(me.body.role).toBe('admin');
+    const meBody = me.body as { username: string; role: string };
+    expect(meBody.username).toBe(adminUser);
+    expect(meBody.role).toBe('admin');
   });
 
-  it('GET /api/users/roles — admin thấy admin, cashier, kitchen_staff', async () => {
-    const login = await request(app.getHttpServer())
+  it('GET /api/users/roles — admin thấy admin, seller, customer', async () => {
+    const server = app.getHttpServer() as unknown as App;
+    const login = await request(server)
       .post('/api/auth/login')
       .send({ username: adminUser, password: adminPass })
       .expect(200);
 
-    const token = login.body.accessToken as string;
+    const token = (login.body as { accessToken: string }).accessToken;
 
-    const roles = await request(app.getHttpServer())
+    const roles = await request(server)
       .get('/api/users/roles')
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
-    expect(Array.isArray(roles.body)).toBe(true);
-    const names = roles.body.map((r: { name: string }) => r.name);
+    const rolesBody = roles.body as Array<{ name: string }>;
+    expect(Array.isArray(rolesBody)).toBe(true);
+    const names = rolesBody.map((r) => r.name);
     expect(names).toEqual(
-      expect.arrayContaining(['admin', 'cashier', 'kitchen_staff']),
+      expect.arrayContaining(['admin', 'seller', 'customer']),
     );
   });
 });

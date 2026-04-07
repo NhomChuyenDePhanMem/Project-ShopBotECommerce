@@ -1,37 +1,42 @@
-import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsDateString,
-  IsIn,
   IsInt,
   IsOptional,
+  IsPositive,
   IsString,
-  Length,
-  Min,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateReservationDto {
-  @Type(() => Number)
+  @ApiProperty({ example: 1 })
   @IsInt()
-  @Min(1)
+  @IsPositive()
   tableId: number;
 
+  @ApiProperty({ example: 'Nguyen Van C' })
   @IsString()
-  @Length(1, 120)
+  @MaxLength(120)
   customerName: string;
 
+  @ApiPropertyOptional({ example: '0909998888' })
+  @IsOptional()
   @IsString()
-  @Length(6, 20)
-  customerPhone: string;
+  @MaxLength(20)
+  phone?: string;
 
-  @IsDateString()
-  reservedTime: string;
-
-  @Type(() => Number)
+  @ApiProperty({ example: 4 })
   @IsInt()
-  @Min(1)
+  @IsPositive()
   partySize: number;
 
+  @ApiProperty({ example: '2026-04-08T19:00:00.000Z' })
+  @IsDateString()
+  reservedAt: string;
+
+  @ApiPropertyOptional({ example: 'Sinh nhat gia dinh' })
   @IsOptional()
-  @IsIn(['booked', 'checked_in', 'cancelled', 'completed'])
-  status?: 'booked' | 'checked_in' | 'cancelled' | 'completed';
+  @IsString()
+  @MaxLength(500)
+  note?: string;
 }

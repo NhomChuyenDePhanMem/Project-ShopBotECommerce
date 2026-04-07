@@ -23,31 +23,31 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Get()
-  @Roles('admin', 'cashier', 'kitchen_staff')
+  @Roles('admin', 'seller', 'customer')
   findAll() {
     return this.ordersService.findAll();
   }
 
   @Get(':id')
-  @Roles('admin', 'cashier', 'kitchen_staff')
+  @Roles('admin', 'seller', 'customer')
   findById(@Param('id') id: string) {
     return this.ordersService.findById(id);
   }
 
   @Post()
-  @Roles('admin', 'cashier')
+  @Roles('admin', 'customer')
   create(@Body() dto: CreateOrderDto) {
     return this.ordersService.create(dto);
   }
 
   @Post(':id/items')
-  @Roles('admin', 'cashier')
+  @Roles('admin', 'customer')
   addItem(@Param('id') id: string, @Body() dto: AddOrderItemDto) {
     return this.ordersService.addItem(id, dto);
   }
 
   @Patch(':id/items/:itemId')
-  @Roles('admin', 'cashier')
+  @Roles('admin', 'customer')
   updateItem(
     @Param('id') id: string,
     @Param('itemId') itemId: string,
@@ -57,37 +57,37 @@ export class OrdersController {
   }
 
   @Delete(':id/items/:itemId')
-  @Roles('admin', 'cashier')
+  @Roles('admin', 'customer')
   removeItem(@Param('id') id: string, @Param('itemId') itemId: string) {
     return this.ordersService.removeItem(id, itemId);
   }
 
-  @Patch(':id/kitchen/accept')
-  @Roles('kitchen_staff')
-  kitchenAccept(@Param('id') id: string) {
-    return this.ordersService.kitchenAccept(id);
+  @Patch(':id/seller/confirm')
+  @Roles('seller', 'admin')
+  sellerConfirm(@Param('id') id: string) {
+    return this.ordersService.sellerAdvanceToConfirmed(id);
   }
 
-  @Patch(':id/kitchen/serve')
-  @Roles('kitchen_staff')
-  kitchenServe(@Param('id') id: string) {
-    return this.ordersService.kitchenServe(id);
+  @Patch(':id/seller/ship')
+  @Roles('seller', 'admin')
+  sellerShip(@Param('id') id: string) {
+    return this.ordersService.sellerAdvanceToShipping(id);
   }
 
-  @Patch(':id/cashier/pay')
-  @Roles('cashier', 'admin')
-  cashierPay(@Param('id') id: string) {
-    return this.ordersService.cashierPay(id);
+  @Patch(':id/customer/complete')
+  @Roles('customer', 'admin')
+  customerComplete(@Param('id') id: string) {
+    return this.ordersService.customerMarkOrderDone(id);
   }
 
-  @Patch(':id/cashier/cancel')
-  @Roles('cashier', 'admin')
-  cashierCancel(@Param('id') id: string) {
-    return this.ordersService.cashierCancel(id);
+  @Patch(':id/customer/cancel')
+  @Roles('customer', 'admin')
+  customerCancel(@Param('id') id: string) {
+    return this.ordersService.customerMarkOrderCancelled(id);
   }
 
   @Patch(':id/status')
-  @Roles('admin')
+  @Roles('admin', 'seller')
   updateStatus(@Param('id') id: string, @Body() dto: UpdateOrderStatusDto) {
     return this.ordersService.updateStatus(id, dto);
   }

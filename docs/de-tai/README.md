@@ -6,4 +6,4 @@
 
 **Quy mô nhóm:** 6 thành viên — **giảng viên đã chấp nhận** (đề môn chung ghi 3–5).
 
-**Tài liệu kỹ thuật & báo cáo:** [docs/README.md](../README.md) — trục chính *ShopBot* / *SShopBot*; phụ lục *Quản lý quán ăn* trong `docs/design/` (khớp Auth + phân công nhánh Git).
+**Tài liệu kỹ thuật & báo cáo:** [docs/README.md](../README.md) — *ShopBot* / *SShopBot*; thiết kế CSDL & kiến trúc trong [docs/design/](../design/) (khớp backend + `schema.sql`).

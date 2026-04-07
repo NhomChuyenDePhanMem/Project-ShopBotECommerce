@@ -74,7 +74,7 @@
 
 ## 5. Gợi ý map tài liệu có sẵn → các chương báo cáo
 
-**Đề tài chính:** ShopBot — `docs/de-tai/shopbot-summary.docx` + `docs/SShopBot_Design.md` + `docs/0x_*.md`. **Phụ lục CSDL quán ăn:** `docs/design/*` (dùng cho ERD/module bàn–menu–đơn; Auth backend khớp `schema.sql`).
+**Đề tài chính:** ShopBot — `docs/de-tai/shopbot-summary.docx` + `docs/SShopBot_Design.md` + `docs/0x_*.md`. **CSDL & kiến trúc:** `docs/design/*` (ERD, `schema.sql`, sơ đồ module ecommerce; Auth khớp `users` / `roles` trong `schema.sql`).
 
 | Chương | Có thể tái sử dụng / bổ sung từ repo |
 |--------|--------------------------------------|

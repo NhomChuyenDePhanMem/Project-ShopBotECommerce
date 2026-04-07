@@ -1,16 +1,19 @@
-Bảng nhánh Git — ShopBot E-Commerce (khớp docs/phan-cong-nhom.pdf).
-Đề tài: docs/de-tai/shopbot-summary.docx | Mục lục tài liệu: docs/README.md | assignments/README.md
+Bảng nhánh Git — ShopBot E-Commerce (tham chiếu `docs/phan-cong-nhom.pdf` nếu có).
 
-MSSV        | Nhánh git
-------------+--------------------------------------------------
-1721031099  | feature/1721031099-devops-docker-tables-reservations
+- **Đề tài:** `docs/de-tai/shopbot-summary.docx`
+- **Mục lục tài liệu:** `docs/README.md` · **Phân công MSSV:** `assignments/README.md`
+
+Lưu ý: tên nhánh có thể là hậu tố lịch sử dự án cũ; **code hiện tại** là monorepo TMĐT — xem `SCOPE.txt` từng MSSV.
+
+MSSV        | Nhánh git (tham chiếu — có thể đổi slug trên remote)
+------------+--------------------------------------------------------
+1721031099  | feature/1721031099-devops-docker
 1721031693  | feature/1721031693-auth-jwt-users
-1721031203  | feature/1721031203-menu-api
+1721031203  | feature/1721031203-products-catalog-api
 1721031524  | feature/1721031524-orders-order-items
-1721031448  | feature/1721031448-payments-cashier-frontend
-1721031423  | feature/1721031423-frontend-admin-kitchen-docs
+1721031448  | feature/1721031448-payments-frontend
+1721031423  | feature/1721031423-frontend-admin-docs
 
-Mỗi thành viên: git fetch && git checkout <nhánh> && làm việc trong thư mục assignments/<MSSV>/ (ghi chú) và mã nguồn theo cấu trúc dự án (backend/, frontend/ khi đã tạo).
+Mỗi thành viên: `git fetch` và checkout nhánh nhóm (hoặc làm trên `main` theo quy ước).
 
-Chi tiết + API auth: assignments/1721031693/SCOPE.txt. PostgreSQL: `docker compose up -d` tại root repo.
-Mục lục tài liệu (ShopBot + phụ lục quán ăn): docs/README.md
+PostgreSQL: `docker compose up -d` tại thư mục gốc repo.

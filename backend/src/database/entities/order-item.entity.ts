@@ -1,14 +1,17 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { MenuItem } from './menu-item.entity';
+import { Product } from './product.entity';
 import { CustomerOrder } from './order.entity';
 
 @Entity({ name: 'order_items' })
+@Index(['orderId'])
+@Index(['productId'])
 export class OrderItem {
   @PrimaryGeneratedColumn()
   id: number;
@@ -22,12 +25,12 @@ export class OrderItem {
   @JoinColumn({ name: 'order_id' })
   order: CustomerOrder;
 
-  @Column({ name: 'menu_item_id', type: 'int' })
-  menuItemId: number;
+  @Column({ name: 'menu_item_id', type: 'int' }) // → menu_items.id
+  productId: number;
 
-  @ManyToOne(() => MenuItem, (menuItem) => menuItem.orderItems, { eager: true })
+  @ManyToOne(() => Product, (product) => product.orderItems, { eager: true })
   @JoinColumn({ name: 'menu_item_id' })
-  menuItem: MenuItem;
+  product: Product;
 
   @Column({ type: 'int' })
   quantity: number;

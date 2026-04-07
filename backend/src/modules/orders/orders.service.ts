@@ -1,13 +1,11 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
-import { DiningTable } from '../../database/entities/dining-table.entity';
-import { MenuItem } from '../../database/entities/menu-item.entity';
+import { Product } from '../../database/entities/product.entity';
 import { OrderItem } from '../../database/entities/order-item.entity';
 import {
   CustomerOrder,
@@ -20,6 +18,15 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderItemDto } from './dto/update-order-item.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
+const ORDER_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+  pending: ['confirmed', 'cancelled'],
+  confirmed: ['packing', 'shipping', 'cancelled'],
+  packing: ['shipping', 'cancelled'],
+  shipping: ['done', 'cancelled'],
+  done: [],
+  cancelled: [],
+};
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -28,10 +35,8 @@ export class OrdersService {
     private readonly orders: Repository<CustomerOrder>,
     @InjectRepository(OrderItem)
     private readonly orderItems: Repository<OrderItem>,
-    @InjectRepository(MenuItem)
-    private readonly menuItems: Repository<MenuItem>,
-    @InjectRepository(DiningTable)
-    private readonly tables: Repository<DiningTable>,
+    @InjectRepository(Product)
+    private readonly products: Repository<Product>,
     @InjectRepository(User)
     private readonly users: Repository<User>,
   ) {}
@@ -40,8 +45,8 @@ export class OrdersService {
     const items = (order.items ?? []).map((item) => ({
       id: item.id,
       orderId: item.orderId,
-      menuItemId: item.menuItemId,
-      menuItemName: item.menuItem?.name ?? null,
+      productId: item.productId,
+      productName: item.product?.name ?? null,
       quantity: item.quantity,
       unitPrice: Number(item.unitPrice),
       lineTotal: Number(item.unitPrice) * item.quantity,
@@ -51,8 +56,6 @@ export class OrdersService {
 
     return {
       id: order.id,
-      tableId: order.tableId,
-      tableCode: order.table?.tableCode ?? null,
       createdBy: order.createdBy,
       createdByUsername: order.createdByUser?.username ?? null,
       customerName: order.customerName,
@@ -77,13 +80,7 @@ export class OrdersService {
   private async findOrderEntity(id: number): Promise<CustomerOrder> {
     const order = await this.orders.findOne({
       where: { id },
-      relations: [
-        'items',
-        'items.menuItem',
-        'payment',
-        'table',
-        'createdByUser',
-      ],
+      relations: ['items', 'items.product', 'payment', 'createdByUser'],
     });
     if (!order) {
       throw new NotFoundException('Order not found');
@@ -101,13 +98,7 @@ export class OrdersService {
 
   async findAll() {
     const list = await this.orders.find({
-      relations: [
-        'items',
-        'items.menuItem',
-        'payment',
-        'table',
-        'createdByUser',
-      ],
+      relations: ['items', 'items.product', 'payment', 'createdByUser'],
       order: { id: 'DESC' },
     });
     return list.map((order) => this.toOrderView(order));
@@ -120,46 +111,43 @@ export class OrdersService {
 
   async create(dto: CreateOrderDto) {
     const createdId = await this.dataSource.transaction(async (manager) => {
-      const creator = await manager.findOne(User, { where: { id: dto.createdBy } });
+      const creator = await manager.findOne(User, {
+        where: { id: dto.createdBy },
+      });
       if (!creator) {
         throw new BadRequestException('createdBy không hợp lệ');
       }
 
-      const tableId: number | null = dto.tableId ?? null;
-      if (dto.orderType === 'dine_in' && !tableId) {
-        throw new BadRequestException('Đơn dine_in bắt buộc có tableId');
+      const productIds = Array.from(
+        new Set(dto.items.map((item) => item.productId)),
+      );
+      const productRows = await manager.find(Product, {
+        where: { id: In(productIds) },
+      });
+      if (productRows.length !== productIds.length) {
+        throw new BadRequestException('Có sản phẩm không tồn tại');
       }
-      if (tableId) {
-        const table = await manager.findOne(DiningTable, { where: { id: tableId } });
-        if (!table) {
-          throw new BadRequestException('tableId không tồn tại');
-        }
-        if (table.status === 'occupied') {
-          throw new ConflictException('Bàn hiện đang occupied');
-        }
-      }
-
-      const menuIds = Array.from(new Set(dto.items.map((item) => item.menuItemId)));
-      const menuRows = await manager.find(MenuItem, { where: { id: In(menuIds) } });
-      if (menuRows.length !== menuIds.length) {
-        throw new BadRequestException('Có menu item không tồn tại');
-      }
-      const menuMap = new Map<number, MenuItem>(menuRows.map((row) => [row.id, row]));
+      const productMap = new Map<number, Product>(
+        productRows.map((row) => [row.id, row]),
+      );
 
       for (const item of dto.items) {
-        const menu = menuMap.get(item.menuItemId);
-        if (!menu) {
-          throw new BadRequestException(`Menu item #${item.menuItemId} không tồn tại`);
+        const product = productMap.get(item.productId);
+        if (!product) {
+          throw new BadRequestException(
+            `Sản phẩm #${item.productId} không tồn tại`,
+          );
         }
-        if (!menu.isAvailable) {
-          throw new BadRequestException(`Menu item #${item.menuItemId} đang tạm ngưng`);
+        if (!product.isAvailable) {
+          throw new BadRequestException(
+            `Sản phẩm #${item.productId} đang tạm ngưng`,
+          );
         }
       }
 
       const order = await manager.save(
         CustomerOrder,
         manager.create(CustomerOrder, {
-          tableId,
           createdBy: dto.createdBy,
           customerName: dto.customerName?.trim() || null,
           orderType: dto.orderType as OrderType,
@@ -169,20 +157,16 @@ export class OrdersService {
       );
 
       const entities = dto.items.map((item) => {
-        const menu = menuMap.get(item.menuItemId)!;
+        const product = productMap.get(item.productId)!;
         return manager.create(OrderItem, {
           orderId: order.id,
-          menuItemId: item.menuItemId,
+          productId: item.productId,
           quantity: item.quantity,
-          unitPrice: menu.price,
+          unitPrice: product.price,
           itemNote: item.itemNote?.trim() || null,
         });
       });
       await manager.save(OrderItem, entities);
-
-      if (tableId) {
-        await manager.update(DiningTable, tableId, { status: 'occupied' });
-      }
 
       return order.id;
     });
@@ -200,26 +184,47 @@ export class OrdersService {
     return this.toOrderView(updated);
   }
 
-  async kitchenAccept(id: string) {
-    const updatedId = await this.transitionOrderStatus(this.parseId(id), 'processing');
+  async sellerAdvanceToConfirmed(id: string) {
+    const updatedId = await this.transitionOrderStatus(
+      this.parseId(id),
+      'confirmed',
+    );
     const updated = await this.findOrderEntity(updatedId);
     return this.toOrderView(updated);
   }
 
-  async kitchenServe(id: string) {
-    const updatedId = await this.transitionOrderStatus(this.parseId(id), 'served');
+  async sellerAdvanceToPacking(id: string) {
+    const updatedId = await this.transitionOrderStatus(
+      this.parseId(id),
+      'packing',
+    );
     const updated = await this.findOrderEntity(updatedId);
     return this.toOrderView(updated);
   }
 
-  async cashierPay(id: string) {
-    const updatedId = await this.transitionOrderStatus(this.parseId(id), 'paid');
+  async sellerAdvanceToShipping(id: string) {
+    const updatedId = await this.transitionOrderStatus(
+      this.parseId(id),
+      'shipping',
+    );
     const updated = await this.findOrderEntity(updatedId);
     return this.toOrderView(updated);
   }
 
-  async cashierCancel(id: string) {
-    const updatedId = await this.transitionOrderStatus(this.parseId(id), 'cancelled');
+  async customerMarkOrderDone(id: string) {
+    const updatedId = await this.transitionOrderStatus(
+      this.parseId(id),
+      'done',
+    );
+    const updated = await this.findOrderEntity(updatedId);
+    return this.toOrderView(updated);
+  }
+
+  async customerMarkOrderCancelled(id: string) {
+    const updatedId = await this.transitionOrderStatus(
+      this.parseId(id),
+      'cancelled',
+    );
     const updated = await this.findOrderEntity(updatedId);
     return this.toOrderView(updated);
   }
@@ -234,21 +239,23 @@ export class OrdersService {
         throw new NotFoundException('Order not found');
       }
       if (!this.isOrderEditable(order.status)) {
-        throw new BadRequestException('Không thể sửa item ở trạng thái hiện tại');
+        throw new BadRequestException(
+          'Không thể sửa item ở trạng thái hiện tại',
+        );
       }
 
-      const menu = await manager.findOne(MenuItem, {
-        where: { id: dto.menuItemId },
+      const product = await manager.findOne(Product, {
+        where: { id: dto.productId },
       });
-      if (!menu) {
-        throw new BadRequestException('menuItemId không tồn tại');
+      if (!product) {
+        throw new BadRequestException('productId không tồn tại');
       }
-      if (!menu.isAvailable) {
-        throw new BadRequestException('Món ăn đang tạm ngưng');
+      if (!product.isAvailable) {
+        throw new BadRequestException('Sản phẩm đang tạm ngưng');
       }
 
       const existed = await manager.findOne(OrderItem, {
-        where: { orderId: order.id, menuItemId: dto.menuItemId },
+        where: { orderId: order.id, productId: dto.productId },
       });
       if (existed) {
         existed.quantity += dto.quantity;
@@ -263,9 +270,9 @@ export class OrdersService {
         OrderItem,
         manager.create(OrderItem, {
           orderId: order.id,
-          menuItemId: dto.menuItemId,
+          productId: dto.productId,
           quantity: dto.quantity,
-          unitPrice: menu.price,
+          unitPrice: product.price,
           itemNote: dto.itemNote?.trim() || null,
         }),
       );
@@ -285,7 +292,9 @@ export class OrdersService {
         throw new NotFoundException('Order not found');
       }
       if (!this.isOrderEditable(order.status)) {
-        throw new BadRequestException('Không thể sửa item ở trạng thái hiện tại');
+        throw new BadRequestException(
+          'Không thể sửa item ở trạng thái hiện tại',
+        );
       }
 
       const item = await manager.findOne(OrderItem, {
@@ -295,18 +304,18 @@ export class OrdersService {
         throw new NotFoundException('Order item not found');
       }
 
-      if (dto.menuItemId !== undefined && dto.menuItemId !== item.menuItemId) {
-        const menu = await manager.findOne(MenuItem, {
-          where: { id: dto.menuItemId },
+      if (dto.productId !== undefined && dto.productId !== item.productId) {
+        const product = await manager.findOne(Product, {
+          where: { id: dto.productId },
         });
-        if (!menu) {
-          throw new BadRequestException('menuItemId không tồn tại');
+        if (!product) {
+          throw new BadRequestException('productId không tồn tại');
         }
-        if (!menu.isAvailable) {
-          throw new BadRequestException('Món ăn đang tạm ngưng');
+        if (!product.isAvailable) {
+          throw new BadRequestException('Sản phẩm đang tạm ngưng');
         }
-        item.menuItemId = dto.menuItemId;
-        item.unitPrice = menu.price;
+        item.productId = dto.productId;
+        item.unitPrice = product.price;
       }
       if (dto.quantity !== undefined) {
         item.quantity = dto.quantity;
@@ -332,7 +341,9 @@ export class OrdersService {
         throw new NotFoundException('Order not found');
       }
       if (!this.isOrderEditable(order.status)) {
-        throw new BadRequestException('Không thể sửa item ở trạng thái hiện tại');
+        throw new BadRequestException(
+          'Không thể sửa item ở trạng thái hiện tại',
+        );
       }
 
       const item = await manager.findOne(OrderItem, {
@@ -342,9 +353,11 @@ export class OrdersService {
         throw new NotFoundException('Order item not found');
       }
 
-      const count = await manager.count(OrderItem, { where: { orderId: order.id } });
+      const count = await manager.count(OrderItem, {
+        where: { orderId: order.id },
+      });
       if (count <= 1) {
-        throw new BadRequestException('Đơn hàng phải còn tối thiểu 1 món');
+        throw new BadRequestException('Đơn hàng phải còn tối thiểu 1 sản phẩm');
       }
 
       await manager.delete(OrderItem, item.id);
@@ -354,27 +367,21 @@ export class OrdersService {
   }
 
   private isOrderEditable(status: OrderStatus): boolean {
-    return status === 'pending' || status === 'processing';
+    return status === 'pending' || status === 'confirmed';
   }
 
   private async transitionOrderStatus(
     orderId: number,
     next: OrderStatus,
   ): Promise<number> {
-    const transitions: Record<OrderStatus, OrderStatus[]> = {
-      pending: ['processing', 'cancelled'],
-      processing: ['served', 'cancelled'],
-      served: ['paid', 'cancelled'],
-      paid: [],
-      cancelled: [],
-    };
-
     return this.dataSource.transaction(async (manager) => {
-      const order = await manager.findOne(CustomerOrder, { where: { id: orderId } });
+      const order = await manager.findOne(CustomerOrder, {
+        where: { id: orderId },
+      });
       if (!order) {
         throw new NotFoundException('Order not found');
       }
-      if (!transitions[order.status].includes(next)) {
+      if (!ORDER_STATUS_TRANSITIONS[order.status].includes(next)) {
         throw new BadRequestException(
           `Không thể chuyển trạng thái từ ${order.status} sang ${next}`,
         );
@@ -382,10 +389,6 @@ export class OrdersService {
 
       order.status = next;
       await manager.save(CustomerOrder, order);
-
-      if ((next === 'paid' || next === 'cancelled') && order.tableId) {
-        await manager.update(DiningTable, order.tableId, { status: 'available' });
-      }
       return order.id;
     });
   }

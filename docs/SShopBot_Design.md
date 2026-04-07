@@ -9,8 +9,11 @@
 | **Loại phần mềm** | Web App + Chatbot AI |
 | **Tech Stack** | NestJS + PostgreSQL + React |
 | **Đối tượng** | Cộng đồng / Nhiều nhóm người dùng (Người mua, Người bán, Quản trị viên) |
+| **Quy mô nhóm** | **6 thành viên** (theo đề đăng ký môn Chuyên đề phát triển phần mềm) |
 
 **Đề tài đăng ký (môn học):** *ShopBot* — file chính thức [de-tai/shopbot-summary.docx](de-tai/shopbot-summary.docx). Trong các tài liệu chi tiết (`00_`–`06_*.md`), tên **SShopBot** là tên gọi nền tảng; cùng một hướng sản phẩm với đề tài.
+
+**Phân công nhóm:** bảng PDF [phan-cong-nhom.pdf](phan-cong-nhom.pdf) (sinh từ [generate-phan-cong-pdf.py](generate-phan-cong-pdf.py)), chi tiết từng MSSV: [assignments/README.md](../assignments/README.md).
 
 ---
 
@@ -46,33 +49,51 @@ SShopBot hướng tới việc xây dựng nền tảng thương mại điện t
 
 ### 4.1 Backend (NestJS + TypeScript)
 - Cung cấp dữ liệu tĩnh và động qua API (RESTful).
-- **Cấu trúc Modules dự kiến**:
-  - `AuthModule`: Hệ thống xác thực bằng JWT (Passport).
-  - `UsersModule`: API cho profile và quản lý tài khoản.
-  - `ProductsModule`: API cho danh mục, chi tiết sản phẩm.
-  - `OrdersModule`: Quản lý booking, giỏ hàng, và hóa đơn thanh toán.
-  - `ChatbotModule`: Cầu nối với model LLM (như OpenAI API, Ollama hoặc Google Gemini) và quản lý session trò chuyện.
+- **Cấu trúc Modules (backend NestJS — khớp repo)**:
+  - `AuthModule`: JWT (Passport), đăng nhập.
+  - `UsersModule`: profile, CRUD user (theo quyền).
+  - `ProductsModule`: catalog — danh mục & sản phẩm (CSDL: bảng `categories`, `menu_items`; entity `Product`).
+  - `CartModule`: giỏ hàng (demo in-memory, gắn `userId`).
+  - `OrdersModule`: đơn hàng, `order_items`, luồng trạng thái (customer / seller).
+  - `PaymentsModule`: ghi nhận thanh toán theo đơn (`cod`, `vnpay`, `momo`, `stripe`).
+  - `ReviewsModule`, `NotificationsModule`: khung mở rộng.
+  - `ChatbotModule`: OpenAI / Gemini / rule-based, tư vấn theo catalog.
+  - `SeedModule`: seed roles, user mẫu, catalog mặc định.
 
 ### 4.2 Database (PostgreSQL)
-- Sử dụng **TypeORM** (hoặc Prisma) cho NestJS Backend.
-- Sơ đồ bảng (Tables) cơ bản:
-  - `User`, `Role`
-  - `Product`, `Category`
-  - `Order`, `OrderItem`
-  - `ChatSession`, `ChatMessage`
+- **TypeORM** + đồng bộ schema (dev): xem [design/schema.sql](design/schema.sql), [design/erd.dbml](design/erd.dbml).
+- Bảng chính:
+  - `roles`, `users`
+  - `categories`, `menu_items` (catalog — map entity `Product`)
+  - `orders`, `order_items` (FK sản phẩm: cột `menu_item_id` ↔ `productId` trong code)
+  - `payments`
+- Phiên chatbot có thể dùng mock session trong code; có thể bổ sung bảng lưu session sau này.
 
 ### 4.3 Frontend (React + Vite + TypeScript)
 - Chạy nhanh gọn và hiện đại dựa trên Vite.
 - Thư viện UI/CSS: TailwindCSS và linh kiện giao diện tự dựng.
 - Quản lý State: Redux Toolkit hoặc Zustand.
-- Quản lý API Call: React Query / Axios.
+- Gọi API: `fetch` qua client tùy chỉnh / service layer (có thể bổ sung React Query sau).
 
 ---
-_Tài liệu đang trong quá trình phát triển và hoàn thiện. Vui lòng đóng góp và chỉnh sửa để hoàn bị các modules tính năng._
+_Tài liệu đang trong quá trình phát triển và hoàn thiện._
 
-## 5. Cập nhật kiến trúc (03/2026)
-- Đã bổ sung `ReviewModule`, `NotificationModule`, `PaymentModule` ở backend để tách nghiệp vụ rõ ràng.
-- Đã tách `PAYMENT` độc lập với `ORDER`; thêm bảng `REVIEW`; `CATEGORY` hỗ trợ `parent_id`; `PRODUCT` có `seller_id`.
-- `ChatbotModule` dùng `ChatSession` + `ChatMessage`, có `context window` và `token limit` theo phiên.
-- Đã thêm `rate limiting` cho endpoint AI để tránh bị lạm dụng và kiểm soát chi phí.
-- Frontend dùng `Zustand` cho cart state, có optimistic checkout, `ErrorBoundary`, và i18n cơ bản `vi/en`.
+## 5. Cập nhật kiến trúc (04/2026)
+- Backend: `Cart`, `Orders`, `Payments`, `Products`, `Auth`, `Users`, `Chatbot`, `Reviews`, `Notifications`, `Seed`.
+- Thanh toán tách bảng `payments`; vai trò seed: `admin`, `seller`, `customer`.
+- `ChatbotModule`: giới hạn context / token, provider từ biến môi trường; **Throttler** (rate limit) toàn cục trên API.
+- Frontend: `App.tsx` theo vai trò; có thể dùng `Zustand` cho cart store; `ErrorBoundary`, i18n tùy cấu hình.
+- Đã loại bỏ khỏi codebase các module phụ lục nhà hàng (bàn, đặt bàn, API menu riêng); nghiệp vụ thống nhất TMĐT.
+
+## 6. Phân công 6 thành viên (tóm tắt)
+
+| STT | MSSV | Họ tên | Hạng mục chính |
+|:---:|:---:|---|---|
+| 1 | 1721031099 | Vũ Đình Mạnh | DevOps/DB: Docker, PostgreSQL, `db:init`, `schema.sql` |
+| 2 | 1721031693 | Huỳnh Minh Tiến | Auth JWT, roles, users |
+| 3 | 1721031203 | Nguyễn Tiến Đạt | Catalog: categories + products (`menu_items`) |
+| 4 | 1721031524 | Nguyễn Viết Quốc Anh | Orders, `order_items`, luồng trạng thái |
+| 5 | 1721031448 | Nguyễn Mai Quốc Khánh | Payments, checkout / thanh toán (FE+BE) |
+| 6 | 1721031423 | Trần Quang Huy | FE React: catalog, giỏ, đơn, chatbot, admin user, README/demo |
+
+Chi tiết: [assignments/BRANCHES.txt](../assignments/BRANCHES.txt), [generate-phan-cong-pdf.py](generate-phan-cong-pdf.py).

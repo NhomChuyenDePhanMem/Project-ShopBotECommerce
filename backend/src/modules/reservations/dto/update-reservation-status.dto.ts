@@ -1,6 +1,17 @@
-import { IsIn } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsIn, IsString } from 'class-validator';
+
+const RESERVATION_STATUS = [
+  'pending',
+  'confirmed',
+  'seated',
+  'completed',
+  'cancelled',
+] as const;
 
 export class UpdateReservationStatusDto {
-  @IsIn(['booked', 'checked_in', 'cancelled', 'completed'])
-  status: 'booked' | 'checked_in' | 'cancelled' | 'completed';
+  @ApiProperty({ enum: RESERVATION_STATUS, example: 'confirmed' })
+  @IsString()
+  @IsIn(RESERVATION_STATUS)
+  status: (typeof RESERVATION_STATUS)[number];
 }

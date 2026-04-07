@@ -1,116 +1,61 @@
-# 6. Tích hợp AI & Thiết kế Hệ thống Thông minh (Smart Warehouse)
+# 6. Tích hợp AI trong ShopBot E-Commerce
 
-Tài liệu này trình bày các sơ đồ biểu diễn kiến trúc và luồng hoạt động khi tích hợp Trí tuệ Nhân tạo (ở đây sử dụng API của LLM, ví dụ như Claude / Anthropic) vào dự án. Việc ứng dụng AI sẽ lập tức biến dự án Warehouse Simulation kết hợp E-Commerce thông thường trở thành một **Hệ Thống Kho Thông Minh (Smart Warehouse)**.
+Tài liệu mô tả cách **ShopBot** tích hợp LLM (OpenAI, Google Gemini hoặc chế độ rule-based) để tư vấn mua sắm trong phạm vi TMĐT. **Không gọi API key từ trình duyệt** — mọi luồng đi qua `ChatbotModule` (NestJS); có thể bổ sung dữ liệu catalog từ `ProductsService` vào prompt.
+
+**Nhóm thực hiện:** 6 thành viên; module chatbot phối hợp với nhóm frontend (UI) và DevOps (cấu hình env).
 
 ---
 
-## 6.1 Sơ Đồ Kiến Trúc (Architecture Diagram)
-
-Sơ đồ mô tả vị trí của Claude AI trong hệ thống. Việc người dùng gọi lệnh sẽ luôn đi qua Backend để đảm bảo bảo mật Private Key, cũng như cho phép Backend "nhồi" thêm dữ liệu nội bộ dể hệ AI có thể đưa ra câu trả lời chính xác nhất.
+## 6.1 Sơ đồ kiến trúc (tổng quan)
 
 ```mermaid
-flowchart TD
-    %% Định dạng style màu sắc
-    classDef user fill:#64B5F6,stroke:#1E88E5,stroke-width:2px,color:#fff
-    classDef client fill:#81C784,stroke:#4CAF50,stroke-width:2px,color:#fff
-    classDef backend fill:#FFB74D,stroke:#F57C00,stroke-width:2px,color:#fff
-    classDef db fill:#9575CD,stroke:#673AB7,stroke-width:2px,color:#fff
-    classDef ai fill:#F06292,stroke:#E91E63,stroke-width:3px,color:#fff
-
-    User((Người dùng\nAdmin / Buyers)):::user
-    
-    subgraph Client Layer
-        Terminal[Vs Code Terminal\n(Môi trường Simulation)]:::client
-        WebUI[Web UI React.js\n(Môi trường Thực tế)]:::client
-    end
-    
-    subgraph Backend Core Layer
-        API[Node.js / NestJS App\nController & Logic]:::backend
-    end
-    
-    subgraph Data & AI Layer
-        DB[(PostgreSQL\nWarehouse DB)]:::db
-        ClaudeAI{{Claude API\n(AnthropicLLM)}}:::ai
-    end
-
-    User <--> Terminal
-    User <--> WebUI
-    
-    Terminal <-->|Lệnh CLI/Text| API
-    WebUI <-->|HTTP/REST| API
-    
-    API <-->|Truy vấn Tồn kho / SQL| DB
-    API <-->|Gửi Prompt + Data\nNhận Result (JSON/Text)| ClaudeAI
+flowchart LR
+    U[Người dùng\nBuyer / Seller / Admin] --> R[React SPA]
+    R -->|REST + JWT| B[NestJS API]
+    B --> P[(PostgreSQL\ncatalog / orders)]
+    B -->|HTTPS| L[LLM Provider\nOpenAI / Gemini]
 ```
 
-👉 **Giải thích để ghi vào báo cáo:**
-Sơ đồ chỉ ra hệ thống Backend (Node.js) đóng vai trò trung gian "điều phối". Thay vì gọi trực tiếp AI, khi User gửi yêu cầu từ Terminal, Node.js sẽ truy vấn thêm Database xem số lượng tồn kho bao nhiêu, ghép kho đó vào Prompt như 1 đoạn Context, rồi mới gọi Claude API.
+👉 Backend giữ bí mật API key; có thể giới hạn context / token và rate limit (Throttler) để kiểm soát chi phí.
 
 ---
 
-## 6.2 Sơ Đồ Luồng Hoạt Động (Sequence Diagram)
-
-Mô phỏng 1 luồng hệ thống chi tiết kể từ lúc Người Quản Trị (qua Terminal) gửi 1 lệnh thao tác phức tạp cho AI xử lý.
+## 6.2 Luồng sequence (tư vấn theo ngân sách)
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor U as User (Terminal / UI)
-    participant Node as Node.js App
-    participant DB as PostgreSQL
-    participant AI as Claude API
+    actor U as Khách hàng
+    participant FE as React UI
+    participant API as ChatbotController
+    participant S as ProductsService
+    participant LLM as LLM API
 
-    U->>Node: Gửi Prompt: "Phân tích kho để xuất 50 kiện hàng cho công ty A"
-    activate Node
-    
-    Note right of Node: App trích xuất Text<br/>để lấy ngữ cảnh
-    Node->>DB: Query Lấy danh sách mặt hàng & Vị trí kho
-    activate DB
-    DB-->>Node: Trả về Inventory Data (JSON)
-    deactivate DB
-    
-    Note over Node,AI: Dựng System Prompt kết hợp Input Data
-    Node->>AI: POST /v1/messages gửi Context (Prompt + JSON Kho)
-    activate AI
-    Note right of AI: Claude suy luận LLM,<br/>tìm cách tối ưu tuyến xuất hàng
-    AI-->>Node: Phản hồi kết quả thuật toán & Lời khuyên
-    deactivate AI
-    
-    Note right of Node: Format lại nội dung để dễ nhìn
-    Node-->>U: Hiển thị Response Text (+ Gợi ý lệnh xử lý tiếp) ra màn hình
-    deactivate Node
+    U->>FE: Nhập câu hỏi + (tuỳ chọn) sessionId
+    FE->>API: POST /api/chatbot/messages
+    API->>S: Lấy danh sách sản phẩm gợi ý (vd. theo budget)
+    S-->>API: Top sản phẩm / catalog snippet
+    API->>LLM: Prompt hệ thống + ngữ cảnh sản phẩm
+    LLM-->>API: Nội dung trả lời
+    API-->>FE: JSON { text, sessionId, fallbackUsed, ... }
+    FE-->>U: Hiển thị câu trả lời
 ```
 
 ---
 
-## 6.3 Sơ Đồ Tính Năng AI (Smart Use Case Diagram)
-
-Bản đồ này trình diễn các Use Cases chỉ khả thi khi có AI "nhúng" vào, đóng vai trò nâng cấp hệ thống kho hàng và cửa hàng lên mức độ Tự Động Hóa.
+## 6.3 Use case AI (TMĐT)
 
 ```mermaid
 usecaseDiagram
-    actor Admin as "Quản trị viên Kho\n(Admin Terminal)"
-    actor User as "Nhân viên / Khách hàng\n(Web/App)"
-    
-    package "Smart Warehouse Engine (NLP AI)" {
-        usecase "Hỏi AI để tạo lập đơn hàng từ văn bản ngẫu nhiên" as UC1
-        usecase "Tự động phân tích & Tối ưu vị trí kho hàng" as UC2
-        usecase "Hỏi AI báo cáo số liệu & Dự đoán cạn kho" as UC3
-        usecase "AI hỗ trợ viết Mô tả Sản Phẩm chuẩn SEO" as UC4
+    actor Buyer as Khách hàng
+    package "Chatbot ShopBot" {
+        usecase "Tư vấn sản phẩm theo nhu cầu / ngân sách" as UC1
+        usecase "Giải thích chính sách giao hàng / đổi trả (trong phạm vi cho phép)" as UC2
+        usecase "Gợi ý sản phẩm liên quan từ catalog" as UC3
     }
-
-    Admin --> UC2
-    Admin --> UC3
-    
-    User --> UC1
-    User --> UC4
-    
-    note "Quy trình sử dụng Mô hình\nClaude/Anthropic để\nnhận diện Function Calling" as N1
-    UC1 .. N1
-    UC2 .. N1
+    Buyer --> UC1
+    Buyer --> UC2
+    Buyer --> UC3
 ```
 
-👉 **Giá trị gia tăng ấn tượng cho dự án (Điểm cộng):**
-1.  **AI hỗ trợ tìm và tối ưu kho (UC2):** Sắp xếp hàng theo Date (FIFO), theo khối lượng, tính toán khu vực lưu kho hợp lý nhất qua phân tích của AI.
-2.  **Hỏi AI để tạo / nhập kho (UC1):** Thay vì click chuột thủ công từng thẻ mặt hàng. User chỉ cần gõ trên Terminal: *"Ngày mai nhập 20 thùng táo vào kho miền Nam, có mã KH02"*, AI sẽ parse ra API để tạo lệnh nhập kho tự động.
-3.  **Dự đoán hàng (UC3):** AI đánh giá tốc độ tiêu thụ hiện tại và cảnh báo tự động lên màn hình những mã sắp hết.
+👉 **Giá trị gia tăng:** giảm thời gian tìm kiếm, tăng tính tương tác; có thể mở rộng thêm moderation nội dung và log phiên phục vụ báo cáo.

@@ -1,113 +1,190 @@
 # ShopBot E-Commerce
 
-Dự án nhóm môn **Chuyên đề phát triển phần mềm** — nền tảng TMĐT tích hợp chatbot AI.
+**Nền tảng thương mại điện tử full-stack** kèm **chatbot AI** hỗ trợ tư vấn mua sắm: khách xem sản phẩm, giỏ hàng, đặt hàng, thanh toán; người bán và quản trị thao tác qua giao diện và API có phân quyền.
 
-| Mục | Tham chiếu |
-|-----|------------|
-| **Đề tài đăng ký** | [docs/de-tai/shopbot-summary.docx](docs/de-tai/shopbot-summary.docx) |
-| **Nhóm** | **6** thành viên (giảng viên đã chấp nhận; đề môn chung ghi 3–5) |
-| **Mục lục tài liệu** | [docs/README.md](docs/README.md) |
-| **Nộp cuối kỳ** | [docs/cuoi-ky-de-bai.md](docs/cuoi-ky-de-bai.md) |
+**Hữu ích vì:** gom **frontend (React)**, **backend (NestJS + PostgreSQL)** và **tích hợp AI** trong một repo có tài liệu thiết kế (`docs/`), phù hợp học tập, demo môn học hoặc làm nền mở rộng thật (thanh toán, vận chuyển, v.v.).
 
-## Cài đặt và chạy
+---
 
-1. **PostgreSQL:** ở thư mục gốc repo chạy `docker compose up -d` (xem `docker-compose.yml`).
-2. **Backend:** sao chép `backend/.env.example` → `backend/.env`, rồi:
-   ```bash
-   cd backend
-   npm install
-   npm run db:init   # nạp migration/seed từ docs/design/schema.sql
-   npm run start:dev
-   ```
-   API mặc định: `http://localhost:3000`, prefix `/api`.
-3. **Frontend:**
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-   Tùy chọn: biến môi trường `VITE_API_BASE_URL` (mặc định trong code: `http://localhost:3000/api`).
-4. **Auth, dining tables, reservations & endpoint chi tiết:** [backend/README.md](backend/README.md).  
-5. **E2E:** trong `backend/`, cần Postgres đang chạy: `npm run test:e2e`.
+## Mục lục
 
-## Frontend demo nhanh (dashboard quan ly)
+- [Giới thiệu ngắn](#intro)
+- [Yêu cầu hệ thống](#requirements)
+- [Cài đặt](#installation)
+- [Sử dụng](#usage)
+- [Kiểm thử và build](#testing)
+- [Cấu trúc thư mục](#structure)
+- [Tài liệu liên quan](#docs)
+- [Đóng góp](#contributing)
 
-Sau khi chay backend + frontend, vao giao dien web va demo theo 4 tab:
+---
 
-1. **Menu & Danh muc**
-   - Tao danh muc moi.
-   - Them menu item moi (chon danh muc, gia, trang thai phuc vu).
-   - Xoa danh muc/mon de demo thao tac CRUD.
-2. **Man hinh bep**
-   - Quan sat don theo cot trang thai: `pending -> processing -> served -> paid`.
-   - Chuyen trang thai don truc tiep tren tung card don.
-3. **Ban & Dat ban**
-   - Xem danh sach ban va doi trang thai `available/reserved/occupied`.
-   - Tao dat ban moi (ten khach, SDT, gio dat, so nguoi).
-   - Doi trang thai dat ban: `booked`, `checked_in`, `completed`, `cancelled`, `no_show`.
-4. **Nguoi dung (neu can demo quan tri)**
-   - Dang nhap bang tai khoan admin (`/api/auth/login`).
-   - Xem danh sach user, tao user moi, xoa user.
+<h2 id="intro">Giới thiệu ngắn</h2>
 
-> Luu y: tab **Nguoi dung** yeu cau JWT admin hop le. Neu chua co account admin seed, tao nhanh theo huong dan `backend/README.md`.
+| Khía cạnh | Nội dung |
+|-----------|----------|
+| **Nghiệp vụ** | Đăng nhập JWT, catalog, giỏ, đơn hàng, thanh toán, đánh giá, thông báo, chatbot |
+| **Vai trò** | `customer`, `seller`, `admin` |
+| **Công nghệ** | React 19 + Vite + TypeScript + Tailwind; NestJS 11; PostgreSQL 16 |
 
-## Goi y kich ban demo / slide (7-10 phut)
+---
 
-- **Slide 1 - Van de & muc tieu:** quan ly nha hang gom menu, bep, ban/dat ban, user.
-- **Slide 2 - Kien truc:** React frontend + NestJS backend + PostgreSQL.
-- **Slide 3 - Luong nghiep vu chinh:** tao mon -> tao don -> bep xu ly -> thanh toan -> cap nhat ban.
-- **Slide 4 - Demo live (theo thu tu tab):**
-  1) Menu & Danh muc, 2) Man hinh bep, 3) Ban & Dat ban, 4) Nguoi dung.
-- **Slide 5 - Ket qua:** dong bo trang thai don-ban, thao tac nhanh theo vai tro.
-- **Slide 6 - Huong mo rong:** phan quyen UI theo role, dashboard realtime websocket, bao cao doanh thu.
+<h2 id="requirements">Yêu cầu hệ thống</h2>
 
-Khi quay video demo, nen bat dau tu man hinh da co san du lieu seed de thao tac nhanh trong 1 lan quay.
+- **Node.js** 20+ (khuyến nghị LTS)
+- **npm** (đi kèm Node)
+- **Docker Desktop** (hoặc Docker Engine + Compose) để chạy PostgreSQL — hoặc bạn tự cài PostgreSQL và chỉnh biến môi trường cho khớp
 
-## Cấu trúc thư mục (trên Git)
+---
 
-```text
-Project-ShopBotECommerce/
-├── assignments/          # Phân công: BRANCHES.txt + assignments/<MSSV>/SCOPE.txt
-├── backend/              # NestJS — Auth + DB; API demo TMĐT (mock)
-├── docker-compose.yml    # PostgreSQL (dev)
-├── docs/
-│   ├── README.md         # Mục lục tài liệu (vào đây trước)
-│   ├── de-tai/           # Đề tài đăng ký — shopbot-summary.docx
-│   ├── design/           # Phụ lục mini project Quản lý quán ăn (ERD, schema, kiến trúc)
-│   ├── SShopBot_Design.md, 00_…06_*.md  # Tài liệu phân tích/thiết kế ShopBot (TMĐT + AI)
-│   └── …
-├── frontend/             # React + Vite
-└── README.md             # File này
+<h2 id="installation">Cài đặt</h2>
+
+### 1. Sao chép mã nguồn
+
+```bash
+git clone <URL-repo-của-bạn>.git
+cd Project-ShopBotECommerce
 ```
 
-- **Không commit** thư mục lồng nhầm: `Project-ShopBotECommerce/` hoặc `1721031693_*` (đã có trong `.gitignore`).
-- Sau khi clone chỉ làm việc trong **một** thư mục gốc có `.git`, `backend/`, `frontend/`.
+### 2. PostgreSQL bằng Docker
 
-## Một mạch: đề tài, code và phân công
+Tại **thư mục gốc** của repo:
 
-**Trục chính (báo cáo & demo):** **ShopBot** — mô tả trong `shopbot-summary.docx` và bộ tài liệu `docs/SShopBot_Design.md` + `docs/0x_*.md` (trong văn bản dùng tên sản phẩm **SShopBot**). **Frontend** + **backend** (NestJS) triển khai luồng TMĐT + chatbot mock.
+```bash
+docker compose up -d
+```
 
-**Phụ lục thiết kế:** `docs/design/*` là bài **Quản lý quán ăn** (ERD, `schema.sql`, kiến trúc module). **Auth** và bảng `users` / `roles` hiện **khớp** schema này (`admin`, `cashier`, `kitchen_staff`). **Phân công nhánh Git** (`assignments/BRANCHES.txt`) bám module bàn / menu / đơn / thanh toán theo phụ lục; báo cáo nên **dẫn dắt theo ShopBot** và nêu rõ mối liên hệ (ví dụ Auth dùng chung schema quán ăn).
+(Tùy chọn) Sao chép `.env.example` → `.env` ở thư mục gốc để đổi `POSTGRES_PASSWORD`, `POSTGRES_PORT`, v.v.
 
-## Phân công
+Đợi container `healthy` (khoảng vài giây). CSDL mặc định: `sshopbot`, user `postgres` (xem `docker-compose.yml`).
 
-- Bảng nhánh: [assignments/BRANCHES.txt](assignments/BRANCHES.txt)  
-- Phạm vi từng thành viên: [assignments/](assignments/) (thư mục theo MSSV).
+### 3. Backend
 
-## Bài tập cuối kỳ (nhóm)
+```bash
+cd backend
+copy .env.example .env
+# macOS/Linux: cp .env.example .env
+npm install
+npm run db:init
+npm run start:dev
+```
 
-Theo đề bài môn: **PDF báo cáo** (≥20 trang, gợi ý 50–70) + **GitHub** (code chạy được, README, lịch sử commit, `.gitignore`) + **video YouTube** (public hoặc unlisted). Hạn nộp nhóm theo đề: **trước 10/04/2026** (đối chiếu thông báo lớp).
+- `db:init` áp dụng `docs/design/schema.sql` lên PostgreSQL.
+- Seed tài khoản demo chạy khi backend khởi động (nếu bảng `users` còn trống). Cấu hình seed: `SEED_*` trong `backend/.env`.
 
-- Checklist & cấu trúc chương: [docs/cuoi-ky-de-bai.md](docs/cuoi-ky-de-bai.md)  
-- **Phụ lục báo cáo:** link GitHub + YouTube; **đầu mỗi chương** ghi thành viên tham gia (không ghi người không đóng góp).
+API mặc định: **http://localhost:3000/api**
 
-## Danh sách thành viên
+### 4. Frontend
 
-| STT | MSSV       | Họ và Tên            |
-|-----|------------|----------------------|
-| 1   | 1721031099 | Vũ Đình Mạnh         |
-| 2   | 1721031693 | Huỳnh Minh Tiến      |
-| 3   | 1721031203 | Nguyễn Tiến Đạt      |
-| 4   | 1721031524 | Nguyễn Viết Quốc Anh |
-| 5   | 1721031448 | Nguyễn Mai Quốc Khánh|
-| 6   | 1721031423 | Trần Quang Huy       |
+Mở terminal **mới**:
+
+```bash
+cd frontend
+copy .env.example .env
+# macOS/Linux: cp .env.example .env
+npm install
+npm run dev
+```
+
+Ứng dụng web: **http://localhost:5173** (hoặc cổng Vite in ra trên terminal).  
+Biến `VITE_API_BASE_URL` trong `frontend/.env` trỏ tới API (mặc định `http://localhost:3000/api`).
+
+---
+
+<h2 id="usage">Sử dụng</h2>
+
+### Giao diện web
+
+1. Mở trình duyệt tại URL Vite (thường `http://localhost:5173`).
+2. Đăng nhập bằng tài khoản demo (bảng dưới).
+3. Duyệt sản phẩm, giỏ hàng, đơn hàng, chatbot (tùy vai trò).
+
+### Tài khoản demo (seed)
+
+| Tên đăng nhập | Mật khẩu | Vai trò |
+|---------------|----------|---------|
+| `admin01` | `Admin@123` | Quản trị |
+| `seller01` | `Seller@123` | Người bán |
+| `customer01` | `![1775548879791](image/README/1775548879791.png)` | Khách hàng |
+
+Đổi mật khẩu seed: chỉnh `SEED_*` trong `backend/.env` trước lần seed đầu tiên.
+
+### API (ví dụ với `curl`)
+
+**Kiểm tra health (kèm trạng thái DB):**
+
+```bash
+curl -s http://localhost:3000/api
+```
+
+**Đăng nhập (lấy JWT):**
+
+```bash
+curl -s -X POST http://localhost:3000/api/auth/login ^
+  -H "Content-Type: application/json" ^
+  -d "{\"username\":\"customer01\",\"password\":\"Customer@123\"}"
+```
+
+Trên **macOS/Linux**, thay `^` bằng `\` và gộp dòng tùy ý. Trên **PowerShell**, có thể gọi một dòng:  
+`curl.exe -s -X POST http://localhost:3000/api/auth/login -H "Content-Type: application/json" -d "{\"username\":\"customer01\",\"password\":\"Customer@123\"}"`
+
+Dùng token trả về: `Authorization: Bearer <access_token>` cho các route được bảo vệ.
+
+### Chatbot AI (tùy chọn)
+
+Trong `backend/.env`, cấu hình `CHATBOT_PROVIDER` và khóa API (`GEMINI_API_KEY` / `OPENAI_API_KEY`) theo `backend/.env.example`. Không có khóa thì có thể dùng chế độ quy tắc (`rule_based`) tùy cấu hình hiện tại — xem chi tiết trong `backend/README.md`.
+
+---
+
+<h2 id="testing">Kiểm thử và build</h2>
+
+| Thành phần | Thư mục | Lệnh gợi ý |
+|------------|---------|------------|
+| Backend | `backend/` | `npm run build`, `npm run test`, `npm run test:e2e` |
+| Frontend | `frontend/` | `npm run build`, `npm run lint` |
+
+**E2E backend** cần PostgreSQL đang chạy và `backend/.env` khớp với Docker Compose (host, port, user, password, database).
+
+---
+
+<h2 id="structure">Cấu trúc thư mục</h2>
+
+```
+Project-ShopBotECommerce/
+├── backend/          # NestJS API
+├── frontend/         # React + Vite
+├── docs/             # Tài liệu dự án, thiết kế CSDL, ERD
+├── docker-compose.yml
+└── README.md
+```
+
+---
+
+<h2 id="docs">Tài liệu liên quan</h2>
+
+| Tài liệu | Mô tả |
+|----------|--------|
+| [docs/README.md](docs/README.md) | Mục lục / báo cáo tổng hợp |
+| [docs/database.md](docs/database.md) | Bảo mật CSDL, backup, hiệu năng, mở rộng |
+| [docs/design/schema.sql](docs/design/schema.sql) | Schema PostgreSQL baseline |
+| [backend/README.md](backend/README.md) | Module API, biến môi trường, bảo mật HTTP |
+| [frontend/README.md](frontend/README.md) | Giao diện, build, UX |
+
+---
+
+<h2 id="contributing">Đóng góp</h2>
+
+Mọi đóng góp đều được hoan nghênh. Gợi ý quy trình:
+
+1. **Fork** repository và tạo **nhánh mới** (`feature/...` hoặc `fix/...`).
+2. Giữ commit **nhỏ, rõ nội dung**; mô tả PR bằng tiếng Việt hoặc tiếng Anh, nêu **mục đích** và **cách kiểm tra**.
+3. Trước khi mở PR:
+   - Chạy `npm run build` và test/lint tương ứng cho phần bạn sửa (`backend` / `frontend`).
+   - Nếu đụng API hoặc schema, cập nhật **README** hoặc `docs/` cho khớp hành vi mới.
+4. Tuân thủ **style có sẵn** trong repo (ESLint/Prettier nếu đã cấu hình).
+
+Nếu repo có quy tắc riêng của nhóm môn học (nhánh `main`, deadline, reviewer), ưu tiên theo quy định đó.
+
+---
+
+*Nên cập nhật README khi thêm bước cài đặt, đổi cổng, đổi biến môi trường hoặc thay đổi luồng chạy dự án.*

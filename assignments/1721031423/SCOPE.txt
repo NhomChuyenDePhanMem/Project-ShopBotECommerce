@@ -1,8 +1,8 @@
 Trần Quang Huy — MSSV 1721031423
-Nhánh Git: feature/1721031423-frontend-admin-kitchen-docs
+Nhánh Git (tham chiếu): feature/1721031423-frontend-admin-docs
 Đề tài nhóm: ShopBot — docs/de-tai/shopbot-summary.docx | Tài liệu: docs/README.md | assignments/README.md
 
-Phạm vi:
-- Frontend quản lý: menu/danh mục, người dùng (nếu có màn hình).
-- Màn hình bếp: danh sách đơn theo trạng thái; màn hình đặt bàn / bàn.
-- README hướng dẫn cài đặt & chạy; hỗ trợ slide / kịch bản demo.
+Phạm vi hiện tại (ecommerce):
+- Frontend React: đăng nhập, catalog, giỏ, đơn, chatbot, màn quản trị user (admin) theo `App.tsx`.
+- README / hướng dẫn chạy; hỗ trợ slide / kịch bản demo.
+- (Đã gỡ) màn hình bếp / đặt bàn / route `/menu`, `/tables` — không còn trong code hiện tại.

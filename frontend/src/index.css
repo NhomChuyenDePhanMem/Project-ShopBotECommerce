@@ -1,11 +1,144 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #3b82f6;
-  --color-secondary: #8b5cf6;
+  --color-primary: #0f172a;
+  --color-primary-hover: #1e293b;
 }
 
-body {
-  @apply bg-gray-50 text-gray-900;
-  font-family: 'Inter', sans-serif;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply min-h-dvh bg-slate-200/70 text-slate-900 antialiased;
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      Arial,
+      sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #root {
+    @apply min-h-dvh;
+  }
+}
+
+@layer components {
+  .sb-input {
+    @apply w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3.5 text-base text-slate-900 shadow-sm transition-colors placeholder:text-slate-400 sm:py-3 sm:text-sm;
+    @apply hover:border-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2;
+  }
+
+  .sb-select {
+    @apply w-full cursor-pointer appearance-none rounded-xl border border-slate-300 bg-slate-50 px-4 py-3.5 text-base text-slate-900 shadow-sm transition-colors sm:py-3 sm:text-sm;
+    @apply bg-[length:1rem] bg-[right_0.75rem_center] bg-no-repeat pr-10 hover:border-slate-400;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  }
+
+  .sb-btn-primary {
+    @apply inline-flex min-h-11 cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-xl border border-transparent bg-slate-900 px-4 py-3 text-sm font-medium text-white transition-transform active:scale-[0.98] hover:bg-slate-800 sm:min-h-10 sm:py-2.5;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-45;
+  }
+
+  .sb-btn-secondary {
+    @apply inline-flex min-h-11 cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm font-medium text-slate-800 transition-transform active:scale-[0.98] hover:bg-slate-200/70 sm:min-h-10 sm:py-2.5;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-45;
+  }
+
+  .sb-btn-danger {
+    @apply inline-flex min-h-11 cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50/70 px-4 py-3 text-sm font-medium text-red-700 transition-transform active:scale-[0.98] hover:bg-red-100/80 sm:min-h-10 sm:py-2.5;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-45;
+  }
+
+  .sb-btn-tab {
+    @apply inline-flex min-h-11 shrink-0 cursor-pointer touch-manipulation items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition-transform active:scale-[0.98] sm:min-h-10 sm:py-2.5;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-45;
+  }
+
+  .sb-btn-tab-active {
+    @apply border-slate-900 bg-slate-900 text-white shadow-md hover:bg-slate-800;
+  }
+
+  .sb-btn-secondary.sb-btn-sm,
+  .sb-btn-danger.sb-btn-sm {
+    @apply min-h-10 rounded-lg px-3 py-2.5 text-xs sm:text-sm;
+  }
+
+  .sb-card {
+    @apply rounded-2xl border border-slate-300/80 bg-slate-50/90 shadow-sm;
+  }
+
+  .sb-card-pad {
+    @apply p-4 sm:p-5 md:p-6;
+  }
+
+  .sb-heading-page {
+    @apply text-xl font-bold tracking-tight text-slate-900 sm:text-2xl;
+  }
+
+  .sb-heading-section {
+    @apply text-lg font-semibold text-slate-900;
+  }
+
+  .sb-alert-error {
+    @apply rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800;
+  }
+
+  .sb-product-card {
+    @apply flex flex-col gap-2 rounded-2xl border border-slate-300/80 bg-slate-50 p-4 text-sm shadow-sm transition-shadow hover:shadow-md sm:p-5;
+  }
+
+  .sb-spinner {
+    @apply inline-block size-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700;
+  }
+
+  .sb-login-bg {
+    background:
+      radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.22), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(14, 165, 233, 0.2), transparent 45%),
+      linear-gradient(145deg, #f8fafc, #e2e8f0);
+  }
+
+  .sb-login-orb {
+    @apply absolute rounded-full blur-3xl;
+  }
+
+  .sb-login-orb-a {
+    @apply left-[-7rem] top-[-6rem] size-64 bg-indigo-300/30;
+  }
+
+  .sb-login-orb-b {
+    @apply bottom-[-8rem] right-[-6rem] size-72 bg-cyan-300/30;
+  }
+
+  .sb-login-grid {
+    @apply absolute inset-0 opacity-30;
+    background-image: linear-gradient(
+        to right,
+        rgba(100, 116, 139, 0.12) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, rgba(100, 116, 139, 0.12) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(circle at center, black 35%, transparent 90%);
+  }
+
+  .sb-login-card {
+    @apply rounded-3xl border border-slate-200/80 bg-slate-50/90 p-5 shadow-2xl backdrop-blur-md sm:p-6;
+  }
+
+  .sb-login-pill {
+    @apply inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold tracking-wide text-indigo-700;
+  }
 }

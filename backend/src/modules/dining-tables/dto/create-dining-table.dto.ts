@@ -1,24 +1,26 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsIn,
   IsInt,
   IsOptional,
+  IsPositive,
   IsString,
-  Length,
-  Max,
-  Min,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateDiningTableDto {
+  @ApiProperty({ example: 'T01' })
   @IsString()
-  @Length(1, 20)
-  tableCode: string;
+  @MaxLength(40)
+  code: string;
 
+  @ApiProperty({ example: 4 })
   @IsInt()
-  @Min(1)
-  @Max(20)
+  @IsPositive()
   capacity: number;
 
+  @ApiPropertyOptional({ example: 'Gan cua so' })
   @IsOptional()
-  @IsIn(['available', 'occupied', 'reserved'])
-  status?: 'available' | 'occupied' | 'reserved';
+  @IsString()
+  @MaxLength(500)
+  note?: string;
 }

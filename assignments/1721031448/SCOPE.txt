@@ -1,7 +1,8 @@
 Nguyễn Mai Quốc Khánh — MSSV 1721031448
-Nhánh Git: feature/1721031448-payments-cashier-frontend
+Nhánh Git (tham chiếu): feature/1721031448-payments-cashier-frontend
 Đề tài nhóm: ShopBot — docs/de-tai/shopbot-summary.docx | Tài liệu: docs/README.md | assignments/README.md
 
-Phạm vi:
-- Module thanh toán: API payments (cash, card, transfer, e_wallet) gắn với order.
-- Frontend khu vực thu ngân: tạo đơn, chọn món, thanh toán, trạng thái bàn.
+Phạm vi hiện tại (ecommerce):
+- Module thanh toán: API `payments` (phương thức `cod`, `vnpay`, `momo`, `stripe`) gắn với đơn.
+- Giao diện: luồng checkout / thanh toán trên frontend (customer).
+- (Đã đổi) không còn khái niệm “khu vực thu ngân / trạng thái bàn” trong app.

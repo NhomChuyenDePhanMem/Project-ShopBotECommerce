@@ -1,18 +1,26 @@
 # PostgreSQL cho backend (ShopBot / SShopBot). Chạy: docker compose up -d
+#
+# Bảo mật: production — đặt POSTGRES_PASSWORD mạnh (file .env, không commit).
+# Sao lưu: dữ liệu nằm trong named volume shopbot_pgdata; định kỳ pg_dump hoặc snapshot volume.
+# Mở rộng: tăng tài nguyên máy chủ / chuyển sang managed PostgreSQL khi tải lớn.
 services:
   postgres:
     image: postgres:16-alpine
     container_name: shopbot-postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: sshopbot
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-sshopbot}
     ports:
-      - '5432:5432'
+      - '${POSTGRES_PORT:-5432}:5432'
     volumes:
       - shopbot_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d sshopbot']
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-sshopbot}',
+        ]
       interval: 5s
       timeout: 5s
       retries: 5

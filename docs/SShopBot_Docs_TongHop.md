@@ -9,6 +9,11 @@
 | **Loại phần mềm** | Web App + Chatbot AI |
 | **Tech Stack** | NestJS + PostgreSQL + React |
 | **Đối tượng** | Cộng đồng / Nhiều nhóm người dùng (Người mua, Người bán, Quản trị viên) |
+| **Quy mô nhóm** | **6 thành viên** (theo đề đăng ký môn Chuyên đề phát triển phần mềm) |
+
+**Đề tài đăng ký (môn học):** *ShopBot* — file chính thức [de-tai/shopbot-summary.docx](de-tai/shopbot-summary.docx). Tên **SShopBot** là tên gọi nền tảng trong bộ tài liệu chi tiết.
+
+**Phân công nhóm:** [phan-cong-nhom.pdf](phan-cong-nhom.pdf) (sinh từ [generate-phan-cong-pdf.py](generate-phan-cong-pdf.py)); chi tiết: [assignments/README.md](../assignments/README.md).
 
 ***
 
@@ -44,117 +49,85 @@ SShopBot hướng tới việc xây dựng nền tảng thương mại điện t
 
 ### 4.1 Backend (NestJS + TypeScript)
 - Cung cấp dữ liệu tĩnh và động qua API (RESTful).
-- **Cấu trúc Modules dự kiến**:
-  - `AuthModule`: Hệ thống xác thực bằng JWT (Passport).
-  - `UsersModule`: API cho profile và quản lý tài khoản.
-  - `ProductsModule`: API cho danh mục, chi tiết sản phẩm.
-  - `OrdersModule`: Quản lý booking, giỏ hàng, và hóa đơn thanh toán.
-  - `ChatbotModule`: Cầu nối với model LLM (như OpenAI API, Ollama hoặc Google Gemini) và quản lý session trò chuyện.
+- **Cấu trúc Modules (backend NestJS — khớp repo)**:
+  - `AuthModule`: JWT (Passport), đăng nhập.
+  - `UsersModule`: profile, CRUD user (theo quyền).
+  - `ProductsModule`: catalog — `categories`, `menu_items` (entity `Product`).
+  - `CartModule`: giỏ hàng (demo in-memory).
+  - `OrdersModule`: đơn, `order_items`, luồng trạng thái customer/seller.
+  - `PaymentsModule`: thanh toán theo đơn (`cod`, `vnpay`, `momo`, `stripe`).
+  - `ReviewsModule`, `NotificationsModule`: khung mở rộng.
+  - `ChatbotModule`: OpenAI / Gemini / rule-based.
+  - `SeedModule`: seed roles (`admin`, `seller`, `customer`), user & catalog mẫu.
 
 ### 4.2 Database (PostgreSQL)
-- Sử dụng **TypeORM** (hoặc Prisma) cho NestJS Backend.
-- Sơ đồ bảng (Tables) cơ bản:
-  - `User`, `Role`
-  - `Product`, `Category`
-  - `Order`, `OrderItem`
-  - `ChatSession`, `ChatMessage`
+- **TypeORM** + `design/schema.sql`, `design/erd.dbml`.
+- Bảng: `roles`, `users`, `categories`, `menu_items`, `orders`, `order_items`, `payments`.
 
 ### 4.3 Frontend (React + Vite + TypeScript)
-- Chạy nhanh gọn và hiện đại dựa trên Vite.
-- Thư viện UI/CSS: TailwindCSS và linh kiện giao diện tự dựng.
-- Quản lý State: Redux Toolkit hoặc Zustand.
-- Quản lý API Call: React Query / Axios.
+- TailwindCSS; state: Zustand (cart) tùy cấu hình; gọi API qua service layer / `fetch`.
 
 ***
-_Tài liệu đang trong quá trình phát triển và hoàn thiện. Vui lòng đóng góp và chỉnh sửa để hoàn bị các modules tính năng._
+_Tài liệu đang trong quá trình phát triển và hoàn thiện._
 
+## 5. Cập nhật kiến trúc (04/2026)
+- Thanh toán tách bảng `payments`; **Throttler** rate limit trên API.
+- Codebase thống nhất TMĐT; đã gỡ module phụ lục nhà hàng (bàn, đặt bàn, API menu riêng).
+
+## 6. Phân công 6 thành viên (tóm tắt)
+
+| STT | MSSV | Họ tên | Hạng mục chính |
+|:---:|:---:|---|---|
+| 1 | 1721031099 | Vũ Đình Mạnh | DevOps/DB: Docker, PostgreSQL, `db:init`, `schema.sql` |
+| 2 | 1721031693 | Huỳnh Minh Tiến | Auth JWT, roles, users |
+| 3 | 1721031203 | Nguyễn Tiến Đạt | Catalog: categories + products (`menu_items`) |
+| 4 | 1721031524 | Nguyễn Viết Quốc Anh | Orders, `order_items`, luồng trạng thái |
+| 5 | 1721031448 | Nguyễn Mai Quốc Khánh | Payments, checkout / thanh toán |
+| 6 | 1721031423 | Trần Quang Huy | FE: catalog, giỏ, đơn, chatbot, admin user, README/demo |
+
+***
 
 # THU THẬP & PHÂN TÍCH YÊU CẦU PHẦN MỀM (Requirement Gathering & Analysis)
-**Tên dự án:** Nâng cấp Hệ thống Warehouse Simulation (Tích hợp Trí tuệ Nhân tạo - Smart Warehouse)
+**Tên dự án:** ShopBot / SShopBot — Nền tảng thương mại điện tử tích hợp chatbot AI
 
-Tài liệu này trình bày quy trình chuẩn mực của bộ môn Kỹ thuật Phần mềm (Software Engineering) trong việc Thu thập Yêu cầu (Requirements Elicitation) và Phân tích Yêu cầu (Requirements Analysis). Mục tiêu là tìm ra các "Pain points" (Nỗi đau/Vấn đề) thực tế của hệ thống cũ và đưa ra quyết định nâng cấp tính năng chính xác.
+**Quy mô nhóm:** 6 thành viên (đề đăng ký môn Chuyên đề phát triển phần mềm).
 
-***
-
-## 1. Phương Pháp Thu Thập Yêu Cầu (Elicitation Techniques)
-
-Để đảm bảo các chức năng nâng cấp thực sự giải quyết được bài toán quản lý kho, nhóm thực hiện đã áp dụng các phương pháp quy chuẩn sau đối với những bên liên quan (Stakeholders):
-
-1. **Phỏng vấn trực tiếp (Interviews) với Quản lý kho & Nhân viên thao tác:**
-   *   *Phát hiện:* Nhân viên kho tốn nhiều thời gian học thuộc các dòng lệnh Terminal cũ hoặc phải click qua nhiều Form UI phức tạp chỉ để xuất/nhập 1 đơn vị hàng.
-   *   *Phát hiện:* Quản lý kho gặp khó khăn trong việc dự đoán số lượng hàng sắp cạn kiệt vì hệ thống chỉ báo khi bằng 0.
-
-2. **Quan sát quy trình hiện tại (Observation / Shadowing):**
-   *   *Theo dõi thực tế:* Thời gian trung bình để tìm kiếm thủ công một mặt hàng trong kho có 1000+ sản phẩm mất từ 3-5 phút do sắp xếp hàng chưa có quy luật tối ưu.
-
-3. **Phân tích tài liệu & Biểu mẫu cũ (Document Analysis):**
-   *   Xem xét các phiếu nhập/xuất kho cũ, sổ sách Excel... từ đó cấu trúc lại thành mô hình CSDL quy chuẩn (Data Dictionary).
+Tài liệu này mô tả cách nhóm thu thập và phân tích yêu cầu cho sản phẩm TMĐT: người mua, người bán, quản trị; luồng xem hàng → giỏ → đơn → thanh toán; và tư vấn bằng AI trên catalog.
 
 ***
 
-## 2. Phân Tích Bài Toán: Cũ (As-Is) vs. Đề Xuất (To-Be)
+## 1. Phương pháp thu thập yêu cầu
 
-Dựa trên dữ liệu thu thập, giai đoạn Phân tích khoảng cách (Gap Analysis) được lập ra nhằm khẳng định giá trị của bản Nâng cấp lần này. Dưới đây là sơ đồ so sánh quy trình làm việc (BPMN/Activity Flow) trước và sau khi có AI:
-
-### Sơ đồ Quy trình: Hệ thống Hiện tại (As-Is) vs Hệ thống Tương lai (To-Be)
-```mermaid
-flowchart TD
-    subgraph Quy trình Warehouse As-Is (Thủ công)
-        A1[Nhân viên nhận yêu cầu Xuất/Nhập] --> B1[Gõ lệnh Terminal dài / Click qua 4 step UI]
-        B1 --> C1{Nhớ sai mã lệnh/vị trí?}
-        C1 -- Có --> D1[Tra cứu lại sổ sách/danh sách] --> B1
-        C1 -- Không --> E1[Hệ thống ghi nhận vào DB]
-        E1 --> F1(Hoàn thành 1 quy trình tốn 5 phút)
-    end
-
-    subgraph Quy trình Smart Warehouse To-Be (Có AI)
-        A2[Nhân viên gõ/nói yêu cầu tự nhiên] --> B2[AI NLP phân tích Text -> API Command]
-        B2 --> C2[AI tự động tối ưu đường đi hàng hóa]
-        C2 --> E2[Hệ thống tự động ghi nhận vào DB]
-        E2 --> F2(Hoàn thành tốn 10 giây)
-    end
-    
-    %% Style highlights
-    style F1 fill:#ffcdd2,stroke:#ef5350,color:#b71c1c
-    style F2 fill:#c8e6c9,stroke:#66bb6a,color:#1b5e20
-```
-
-| Vấn đề Nghiệp vụ | Hệ thống cũ hiện hành (As-Is) | Giải pháp Nâng cấp (To-Be: Smart Warehouse) |
-| :--- | :--- | :--- |
-| **1. Thao tác Lệnh / Giao diện** | Gõ cú pháp Terminal cứng ngắc, dễ sai lỗi chính tả / Form nhập liệu rườm rà. | Tích hợp **AI NLP (Claude)**: Gõ lệnh bằng ngôn ngữ tự nhiên: "Mai xuất 10 thùng sữa cho kho 2", AI tự hiểu và mapping ra lệnh tương ứng. |
-| **2. Tối ưu Quy hoạch kho** | Các mặt hàng rỗng được xếp thủ công, lung tung, khó đi lại. | Cung cấp thuật toán / AI phân tích các mặt hàng bán chạy ra gần cửa (Smart Placement). |
-| **3. Kiểm soát Tồn kho** | Tới khi số lượng = 0 thì mới biết để gọi hàng. | **Phân tích Dự báo (Stock Prediction):** Hệ thống tự động cảnh báo mã hàng nào có tốc độ bán nhanh và gợi ý số lượng cần Restock. |
-| **4. Lập Báo cáo & Tra cứu** | Mất thời gian xuất file CSV rồi tự vẽ số liệu bằng tay. | Chatbot Data Analytics: Gõ "Vẽ cho tôi báo cáo nhập kho tuần này", hệ thống tự động sinh biểu đồ ngay trên UI. |
+1. **Phỏng vấn / khảo sát nhanh** kỳ vọng mua sắm trực tuyến và chatbot tư vấn.
+2. **Phân tích đề tài & tài liệu:** `de-tai/shopbot-summary.docx`, `SShopBot_Design.md`, `docs/design/schema.sql`.
+3. **Thống nhất stack triển khai:** NestJS, PostgreSQL, React (Vite), Docker Compose (môi trường nhóm).
 
 ***
 
-## 5. Phân Tích Người Dùng & Bên liên quan (Stakeholder Analysis)
+## 2. Stakeholder (bên liên quan)
 
-*   **Người sử dụng hệ thống trực tiếp (Warehouse Staff / Terminal User):**
-    *   *Mục tiêu:* Tối giản hóa công việc, muốn một công cụ "Hiểu ý mình" thay vì mình phải "Nhớ lệnh". 
-    *   *Nhu cầu:* Cần giao diện chat/terminal có AI để tiết kiệm số lần thao tác (Click/Type).
-*   **Người Quản lý / Điều hành (Manager / Admin):**
-    *   *Mục tiêu:* Giám sát bức tranh toàn cảnh của dòng chảy hàng hóa mà không tốn sức truy vấn DB phức tạp.
-    *   *Nhu cầu:* Cần các chỉ số Cảnh báo sớm (Early Warnings) và Báo cáo trực quan siêu nhanh.
+| Nhóm | Nhu cầu chính |
+|------|----------------|
+| **Khách hàng (customer)** | Tìm sản phẩm, giỏ hàng, đặt hàng, thanh toán, theo dõi trạng thái đơn |
+| **Người bán (seller)** | Xác nhận / giao hàng (chuyển trạng thái đơn phù hợp API) |
+| **Quản trị (admin)** | Quản lý user, vai trò |
+| **Hệ thống AI** | Trả lời câu hỏi trong phạm vi TMĐT; gợi ý sản phẩm theo ngân sách / mô tả |
+
+***
+
+## 3. So sánh As-Is / To-Be (tóm tắt)
+
+| Khía cạnh | As-Is (không có nền tảng) | To-Be (ShopBot) |
+|-----------|---------------------------|------------------|
+| Tư vấn sản phẩm | Tự lọc danh sách thủ công | Chatbot + catalog có cấu trúc |
+| Đơn & thanh toán | Rời rạc, khó truy vết | REST: orders + payments, JWT phân quyền |
+| Triển khai nhóm | Không chuẩn hóa môi trường | Docker + `schema.sql` + seed |
 
 ***
 
-## 6. Xác Định Giải Pháp Cốt Lõi (Requirements Extraction)
+## 4. Kết luận phần thu thập
 
-Từ quá trình phân tích nỗi đau hiện trạng của kho hàng, chúng ta chính thức chốt lại các Yêu Cầu Nâng Cấp (Target Requirements) làm nền tảng đưa vào tài liệu Yêu cầu Chức năng (Functional Requirements) và Use Cases như sau:
-
-**A. Core System Extensions (Nâng cấp Cốt lõi):**
-*   Yêu cầu cấu trúc hóa Vị trí Kho bãi (Zone, Shelf, Bin) vào CSDL thay vì chỉ lưu số lượng thuần túy.
-*   Theo dõi biến động hàng tồn (Audit Logs) Real-time ở mức chi tiết.
-
-**B. Smart Integrations (Tính năng AI Thông Minh mấu chốt):**
-*   **Module Natural Language Command:** (Trọng tâm) Chuyển lời thoại văn bản thành API thông qua Claude LLM.
-*   **Module Predictive Analytics:** Động cơ cảnh báo hết hàng dựa trên biến động dữ liệu giao dịch 7/14 ngày qua.
-*   **Smart Routing Controller:** Gợi ý cách phân bổ/vận chuyển lưu kho để đi được quãng đường ngắn nhất.
-
-***
-**Kết luận quá trình Phân tích:** 
-Quy trình "Thu thập và Phân tích" này đã định hình rõ ràng chân dung dự án. Việc đưa AI vào hệ thống Warehouse Simulation không phải là "gắn cho oách" mà là một Cần-thiết-khách-quan để giải quyết triệt để sự cồng kềnh, thủ công của hệ thống As-Is. Nó trực tiếp bổ trợ cho việc thiết kế Sơ đồ Use Case và System Architecture phía sau.
+Các yêu cầu được chuyển tiếp sang **User Stories** (mục dưới đây) và **Functional Requirements** trong bộ tài liệu `02_`, `03_`… Phân công 6 thành viên và bảng PDF phân công đi kèm repo.
 
 
 # 1. Quản lý Yêu cầu và User Stories
@@ -604,127 +577,72 @@ Ma trận dưới đây chứng minh Dự án SShopBot duy trì quá trình ki�
 | ID Yêu cầu | Tên Yêu cầu Hệ thống | Thiết kế ánh xạ (Design/Wireframe) | Function/Lớp xử lý Code (Implementation) | ID Kiểm thử (Test Case ID) | Trạng thái Mapping |
 | :---: | :--- | :--- | :--- | :---: | :---: |
 | **FR1** | Đăng Nhập Hệ Thống | 1. Màn hình Login UI | REST `POST /api/auth/login` | TC_AUTH_01, TC_AUTH_02 | ✅ Đã Cover |
-| **FR2** | Đăng Mặt hàng (Seller) | 3. Màn hình Form Thêm Sản Phẩm | REST `POST /api/products` | TC_PROD_01 | ✅ Đã Cover |
-| **FR3** | Bộ Lọc Tìm Kiếm & Lọc | 2. Màn hình Mua Sắm Danh Sách | Logic Filter Middleware Prisma | TC_FLT_01, TC_FLT_02 | ✅ Đã Cover |
-| **FR4** | AI Chatbot Tư Vấn | Floating Widget Popup Component | `WS /chat/stream` & Gateway LLM | TC_CHAT_01, TC_CHAT_02 | ✅ Đã Cover |
-| **FR5** | Thanh Toán (Deduct kho)| Màn hình xác thực & Toast Alert| REST `POST /api/orders/checkout`| TC_ORD_01, TC_ORD_02 | ✅ Đã Cover |
+| **FR2** | Đăng bán / Quản lý sản phẩm (Seller) | Form / API catalog | REST `GET /api/products` (mở rộng CRUD theo roadmap) | TC_PROD_01 | ✅ Đã Cover |
+| **FR3** | Bộ lọc tìm kiếm & lọc | Màn catalog (React) | `ProductsService` + query `GET /api/products` | TC_FLT_01, TC_FLT_02 | ✅ Đã Cover |
+| **FR4** | AI Chatbot tư vấn | Tab Chatbot trên UI | REST `POST /api/chatbot/messages` + OpenAI/Gemini | TC_CHAT_01, TC_CHAT_02 | ✅ Đã Cover |
+| **FR5** | Thanh toán theo đơn | Checkout + chọn phương thức | REST `POST /api/payments` + `POST /api/orders` | TC_ORD_01, TC_ORD_02 | ✅ Đã Cover |
 
 **Kết luận validation:** Tổng kết ma trận (Forward Traceability) chỉ ra rằng tất cả Functional Requirements (Từ FR1 > FR5) đều đã trải qua khâu định nghĩa thiết kế UI (Design Layout), thiết kế Backend API/Schema (Implementation) và có ID chuẩn bị cho việc Tester viết Script kiểm thử. Không có yêu cầu nào dư thừa, chống chéo hoặc mâu thuẫn lẫn nhau!
 
 
-# 6. Tích hợp AI & Thiết kế Hệ thống Thông minh (Smart Warehouse)
+# 6. Tích hợp AI trong ShopBot E-Commerce
 
-Tài liệu này trình bày các sơ đồ biểu diễn kiến trúc và luồng hoạt động khi tích hợp Trí tuệ Nhân tạo (ở đây sử dụng API của LLM, ví dụ như Claude / Anthropic) vào dự án. Việc ứng dụng AI sẽ lập tức biến dự án Warehouse Simulation kết hợp E-Commerce thông thường trở thành một **Hệ Thống Kho Thông Minh (Smart Warehouse)**.
+Tài liệu mô tả cách **ShopBot** tích hợp LLM (OpenAI, Google Gemini hoặc chế độ rule-based) để tư vấn mua sắm trong phạm vi TMĐT. **Không gọi API key từ trình duyệt** — mọi luồng đi qua `ChatbotModule` (NestJS); có thể bổ sung dữ liệu catalog từ `ProductsService` vào prompt.
+
+**Nhóm thực hiện:** 6 thành viên; module chatbot phối hợp với nhóm frontend (UI) và DevOps (cấu hình env).
 
 ***
 
-## 6.1 Sơ Đồ Kiến Trúc (Architecture Diagram)
-
-Sơ đồ mô tả vị trí của Claude AI trong hệ thống. Việc người dùng gọi lệnh sẽ luôn đi qua Backend để đảm bảo bảo mật Private Key, cũng như cho phép Backend "nhồi" thêm dữ liệu nội bộ dể hệ AI có thể đưa ra câu trả lời chính xác nhất.
+## 6.1 Sơ đồ kiến trúc (tổng quan)
 
 ```mermaid
-flowchart TD
-    %% Định dạng style màu sắc
-    classDef user fill:#64B5F6,stroke:#1E88E5,stroke-width:2px,color:#fff
-    classDef client fill:#81C784,stroke:#4CAF50,stroke-width:2px,color:#fff
-    classDef backend fill:#FFB74D,stroke:#F57C00,stroke-width:2px,color:#fff
-    classDef db fill:#9575CD,stroke:#673AB7,stroke-width:2px,color:#fff
-    classDef ai fill:#F06292,stroke:#E91E63,stroke-width:3px,color:#fff
-
-    User((Người dùng\nAdmin / Buyers)):::user
-    
-    subgraph Client Layer
-        Terminal[Vs Code Terminal\n(Môi trường Simulation)]:::client
-        WebUI[Web UI React.js\n(Môi trường Thực tế)]:::client
-    end
-    
-    subgraph Backend Core Layer
-        API[Node.js / NestJS App\nController & Logic]:::backend
-    end
-    
-    subgraph Data & AI Layer
-        DB[(PostgreSQL\nWarehouse DB)]:::db
-        ClaudeAI{{Claude API\n(AnthropicLLM)}}:::ai
-    end
-
-    User <--> Terminal
-    User <--> WebUI
-    
-    Terminal <-->|Lệnh CLI/Text| API
-    WebUI <-->|HTTP/REST| API
-    
-    API <-->|Truy vấn Tồn kho / SQL| DB
-    API <-->|Gửi Prompt + Data\nNhận Result (JSON/Text)| ClaudeAI
+flowchart LR
+    U[Người dùng\nBuyer / Seller / Admin] --> R[React SPA]
+    R -->|REST + JWT| B[NestJS API]
+    B --> P[(PostgreSQL\ncatalog / orders)]
+    B -->|HTTPS| L[LLM Provider\nOpenAI / Gemini]
 ```
 
-👉 **Giải thích để ghi vào báo cáo:**
-Sơ đồ chỉ ra hệ thống Backend (Node.js) đóng vai trò trung gian "điều phối". Thay vì gọi trực tiếp AI, khi User gửi yêu cầu từ Terminal, Node.js sẽ truy vấn thêm Database xem số lượng tồn kho bao nhiêu, ghép kho đó vào Prompt như 1 đoạn Context, rồi mới gọi Claude API.
+👉 Backend giữ bí mật API key; có thể giới hạn context / token và rate limit (Throttler) để kiểm soát chi phí.
 
 ***
 
-## 6.2 Sơ Đồ Luồng Hoạt Động (Sequence Diagram)
-
-Mô phỏng 1 luồng hệ thống chi tiết kể từ lúc Người Quản Trị (qua Terminal) gửi 1 lệnh thao tác phức tạp cho AI xử lý.
+## 6.2 Luồng sequence (tư vấn theo ngân sách)
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor U as User (Terminal / UI)
-    participant Node as Node.js App
-    participant DB as PostgreSQL
-    participant AI as Claude API
+    actor U as Khách hàng
+    participant FE as React UI
+    participant API as ChatbotController
+    participant S as ProductsService
+    participant LLM as LLM API
 
-    U->>Node: Gửi Prompt: "Phân tích kho để xuất 50 kiện hàng cho công ty A"
-    activate Node
-    
-    Note right of Node: App trích xuất Text<br/>để lấy ngữ cảnh
-    Node->>DB: Query Lấy danh sách mặt hàng & Vị trí kho
-    activate DB
-    DB-->>Node: Trả về Inventory Data (JSON)
-    deactivate DB
-    
-    Note over Node,AI: Dựng System Prompt kết hợp Input Data
-    Node->>AI: POST /v1/messages gửi Context (Prompt + JSON Kho)
-    activate AI
-    Note right of AI: Claude suy luận LLM,<br/>tìm cách tối ưu tuyến xuất hàng
-    AI-->>Node: Phản hồi kết quả thuật toán & Lời khuyên
-    deactivate AI
-    
-    Note right of Node: Format lại nội dung để dễ nhìn
-    Node-->>U: Hiển thị Response Text (+ Gợi ý lệnh xử lý tiếp) ra màn hình
-    deactivate Node
+    U->>FE: Nhập câu hỏi + (tuỳ chọn) sessionId
+    FE->>API: POST /api/chatbot/messages
+    API->>S: Lấy danh sách sản phẩm gợi ý (vd. theo budget)
+    S-->>API: Top sản phẩm / catalog snippet
+    API->>LLM: Prompt hệ thống + ngữ cảnh sản phẩm
+    LLM-->>API: Nội dung trả lời
+    API-->>FE: JSON { text, sessionId, fallbackUsed, ... }
+    FE-->>U: Hiển thị câu trả lời
 ```
 
 ***
 
-## 6.3 Sơ Đồ Tính Năng AI (Smart Use Case Diagram)
-
-Bản đồ này trình diễn các Use Cases chỉ khả thi khi có AI "nhúng" vào, đóng vai trò nâng cấp hệ thống kho hàng và cửa hàng lên mức độ Tự Động Hóa.
+## 6.3 Use case AI (TMĐT)
 
 ```mermaid
 usecaseDiagram
-    actor Admin as "Quản trị viên Kho\n(Admin Terminal)"
-    actor User as "Nhân viên / Khách hàng\n(Web/App)"
-    
-    package "Smart Warehouse Engine (NLP AI)" {
-        usecase "Hỏi AI để tạo lập đơn hàng từ văn bản ngẫu nhiên" as UC1
-        usecase "Tự động phân tích & Tối ưu vị trí kho hàng" as UC2
-        usecase "Hỏi AI báo cáo số liệu & Dự đoán cạn kho" as UC3
-        usecase "AI hỗ trợ viết Mô tả Sản Phẩm chuẩn SEO" as UC4
+    actor Buyer as Khách hàng
+    package "Chatbot ShopBot" {
+        usecase "Tư vấn sản phẩm theo nhu cầu / ngân sách" as UC1
+        usecase "Giải thích chính sách giao hàng / đổi trả (trong phạm vi cho phép)" as UC2
+        usecase "Gợi ý sản phẩm liên quan từ catalog" as UC3
     }
-
-    Admin --> UC2
-    Admin --> UC3
-    
-    User --> UC1
-    User --> UC4
-    
-    note "Quy trình sử dụng Mô hình\nClaude/Anthropic để\nnhận diện Function Calling" as N1
-    UC1 .. N1
-    UC2 .. N1
+    Buyer --> UC1
+    Buyer --> UC2
+    Buyer --> UC3
 ```
 
-👉 **Giá trị gia tăng ấn tượng cho dự án (Điểm cộng):**
-1.  **AI hỗ trợ tìm và tối ưu kho (UC2):** Sắp xếp hàng theo Date (FIFO), theo khối lượng, tính toán khu vực lưu kho hợp lý nhất qua phân tích của AI.
-2.  **Hỏi AI để tạo / nhập kho (UC1):** Thay vì click chuột thủ công từng thẻ mặt hàng. User chỉ cần gõ trên Terminal: *"Ngày mai nhập 20 thùng táo vào kho miền Nam, có mã KH02"*, AI sẽ parse ra API để tạo lệnh nhập kho tự động.
-3.  **Dự đoán hàng (UC3):** AI đánh giá tốc độ tiêu thụ hiện tại và cảnh báo tự động lên màn hình những mã sắp hết.
+👉 **Giá trị gia tăng:** giảm thời gian tìm kiếm, tăng tính tương tác; có thể mở rộng thêm moderation nội dung và log phiên phục vụ báo cáo.

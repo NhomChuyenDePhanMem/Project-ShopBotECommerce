@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DiningTable } from '../../database/entities/dining-table.entity';
 import { OrderItem } from '../../database/entities/order-item.entity';
 import { CustomerOrder } from '../../database/entities/order.entity';
 import { Payment } from '../../database/entities/payment.entity';
@@ -19,8 +18,6 @@ export class PaymentsService {
     private readonly payments: Repository<Payment>,
     @InjectRepository(CustomerOrder)
     private readonly orders: Repository<CustomerOrder>,
-    @InjectRepository(DiningTable)
-    private readonly tables: Repository<DiningTable>,
     @InjectRepository(OrderItem)
     private readonly orderItems: Repository<OrderItem>,
   ) {}
@@ -72,8 +69,8 @@ export class PaymentsService {
     if (order.status === 'cancelled') {
       throw new BadRequestException('Không thể thanh toán đơn đã hủy');
     }
-    if (order.status === 'paid') {
-      throw new ConflictException('Đơn hàng đã ở trạng thái paid');
+    if (order.status === 'done') {
+      throw new ConflictException('Đơn hàng đã hoàn tất');
     }
 
     const exists = await this.payments.exist({
@@ -99,11 +96,8 @@ export class PaymentsService {
     );
 
     if (payment.status === 'success') {
-      order.status = 'paid';
+      order.status = 'done';
       await this.orders.save(order);
-      if (order.tableId) {
-        await this.tables.update(order.tableId, { status: 'available' });
-      }
     }
 
     return this.toView(payment);
@@ -122,12 +116,9 @@ export class PaymentsService {
     const saved = await this.payments.save(payment);
 
     const order = await this.orders.findOne({ where: { id: saved.orderId } });
-    if (order && order.status !== 'paid') {
-      order.status = 'paid';
+    if (order && order.status !== 'done') {
+      order.status = 'done';
       await this.orders.save(order);
-      if (order.tableId) {
-        await this.tables.update(order.tableId, { status: 'available' });
-      }
     }
 
     return this.toView(saved);

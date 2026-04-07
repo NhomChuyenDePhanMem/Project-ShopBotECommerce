@@ -9,9 +9,9 @@ import {
 
 const SYSTEM_PROMPT = `
 Ban la tro ly tu van cua ShopBot.
-- Chi tra loi cac noi dung lien quan den san pham, don hang, khuyen mai, bao hanh.
-- Neu ngoai pham vi thuong mai dien tu, lich su don, hoac tu van mua sam, hay tu choi lich su.
-- Khuyen nghi ngan gon, ro rang, uu tien ngan sach cua nguoi dung.
+- Chi tra loi cac noi dung lien quan den ecommerce: san pham, bien the, gio hang, thanh toan, don hang, van chuyen, khuyen mai, bao hanh.
+- Uu tien de xuat theo nhu cau + ngan sach + thuong hieu; neu thieu du lieu thi hoi lai 1 cau ngan.
+- Neu ngoai pham vi thuong mai dien tu hoac yeu cau nguy hiem thi tu choi lich su.
 `.trim();
 
 const BLOCKED_PATTERNS = [
@@ -21,6 +21,9 @@ const BLOCKED_PATTERNS = [
   /danhsach\s*the\s*tin\s*dung/i,
 ];
 const MAX_SESSION_BUDGET_TOKENS = 4_000;
+const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+const GEMINI_API_BASE =
+  'https://generativelanguage.googleapis.com/v1beta/models';
 
 @Injectable()
 export class ChatbotService {
@@ -75,6 +78,143 @@ export class ChatbotService {
       tokenLimit: CHAT_TOKEN_LIMIT,
       contextTokens: tokens,
       messages: selected.reverse(),
+    };
+  }
+
+  private async replyOpenAI(message: string, sessionId: string) {
+    const apiKey = process.env.OPENAI_API_KEY?.trim();
+    if (!apiKey) return null;
+
+    const model = process.env.OPENAI_MODEL?.trim() || 'gpt-4.1-mini';
+    const context = this.getSessionContext(sessionId);
+    const productHints = (
+      await this.productsService.findAll({ q: message })
+    ).slice(0, 5);
+    const productContext =
+      productHints.length > 0
+        ? `San pham lien quan:\n${productHints
+            .map(
+              (p) =>
+                `- ${p.name} | ${Number(p.price).toLocaleString('vi-VN')} VND | ${p.brand} | rating ${p.rating}`,
+            )
+            .join('\n')}`
+        : 'Khong co san pham lien quan trong CSDL.';
+
+    const priorMessages = context.messages.slice(-6).map((m) => ({
+      role: m.role === 'assistant' ? 'assistant' : 'user',
+      content: m.content,
+    }));
+
+    const body = {
+      model,
+      temperature: 0.4,
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        {
+          role: 'system',
+          content:
+            'Tra loi ngan gon bang tieng Viet co dau. Neu khong du du lieu thi noi ro va hoi them mot cau lam ro.',
+        },
+        { role: 'system', content: productContext },
+        ...priorMessages,
+        { role: 'user', content: message },
+      ],
+    };
+
+    const response = await fetch(OPENAI_API_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`OpenAI request failed: ${response.status} ${errorBody}`);
+    }
+
+    const data = (await response.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const text = data.choices?.[0]?.message?.content?.trim();
+    if (!text) {
+      throw new Error('OpenAI empty response');
+    }
+
+    return {
+      text,
+      products: productHints,
+    };
+  }
+
+  private async replyGemini(message: string, sessionId: string) {
+    const apiKey = process.env.GEMINI_API_KEY?.trim();
+    if (!apiKey) return null;
+
+    const model = (
+      process.env.GEMINI_MODEL?.trim() || 'gemini-2.0-flash'
+    ).replace(/^models\//, '');
+    const context = this.getSessionContext(sessionId);
+    const productHints = (
+      await this.productsService.findAll({ q: message })
+    ).slice(0, 5);
+    const productContext =
+      productHints.length > 0
+        ? `San pham lien quan:\n${productHints
+            .map(
+              (p) =>
+                `- ${p.name} | ${Number(p.price).toLocaleString('vi-VN')} VND | ${p.brand} | rating ${p.rating}`,
+            )
+            .join('\n')}`
+        : 'Khong co san pham lien quan trong CSDL.';
+
+    const transcript = context.messages
+      .slice(-6)
+      .map(
+        (m) => `${m.role === 'assistant' ? 'Assistant' : 'User'}: ${m.content}`,
+      )
+      .join('\n');
+
+    const prompt = [
+      SYSTEM_PROMPT,
+      'Tra loi ngan gon bang tieng Viet co dau. Neu thieu du lieu thi hoi them mot cau lam ro.',
+      productContext,
+      transcript ? `Hoi thoai truoc do:\n${transcript}` : '',
+      `Cau hoi hien tai: ${message}`,
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+
+    const response = await fetch(
+      `${GEMINI_API_BASE}/${model}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.4 },
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Gemini request failed: ${response.status} ${errorBody}`);
+    }
+
+    const data = (await response.json()) as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    };
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if (!text) {
+      throw new Error('Gemini empty response');
+    }
+
+    return {
+      text,
+      products: productHints,
     };
   }
 
@@ -154,15 +294,39 @@ export class ChatbotService {
     });
 
     const context = this.getSessionContext(session.id);
-    const shouldFallback = process.env.CHATBOT_FORCE_DOWN === 'true';
-    const aiResponse = shouldFallback
-      ? {
-          text: 'AI tam thoi khong kha dung. He thong dang fallback sang tu van rule-based.',
-          products: [],
-        }
-      : await this.replyRuleBased(message);
+    // E2E / môi trường không gọi LLM ngoài
+    const forceFallback = process.env.CHATBOT_FORCE_DOWN === 'true';
+    const provider =
+      process.env.CHATBOT_PROVIDER?.trim().toLowerCase() || 'openai';
+    let fallbackUsed = false;
+    let aiResponse: { text: string; products: unknown[] };
+    let providerError: string | undefined;
 
-    const assistantText = `${aiResponse.text}\n\n[system] ${SYSTEM_PROMPT}`;
+    if (forceFallback || provider === 'rule_based') {
+      fallbackUsed = true;
+      aiResponse = await this.replyRuleBased(message);
+    } else {
+      try {
+        const providerReply =
+          provider === 'gemini'
+            ? await this.replyGemini(message, session.id)
+            : await this.replyOpenAI(message, session.id);
+        if (!providerReply) {
+          fallbackUsed = true;
+          providerError = `${provider} provider not configured`;
+          aiResponse = await this.replyRuleBased(message);
+        } else {
+          aiResponse = providerReply;
+        }
+      } catch (error) {
+        fallbackUsed = true;
+        providerError =
+          error instanceof Error ? error.message : 'unknown provider error';
+        aiResponse = await this.replyRuleBased(message);
+      }
+    }
+
+    const assistantText = aiResponse.text;
     mockChatMessages.push({
       id: `cm${mockChatMessages.length + 1}`,
       sessionId: session.id,
@@ -176,7 +340,8 @@ export class ChatbotService {
       sessionId: session.id,
       text: aiResponse.text,
       products: aiResponse.products,
-      fallbackUsed: shouldFallback,
+      fallbackUsed,
+      providerError,
       context,
       budget: {
         maxTokens: MAX_SESSION_BUDGET_TOKENS,

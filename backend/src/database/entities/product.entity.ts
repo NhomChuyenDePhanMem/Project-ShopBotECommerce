@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -10,15 +11,16 @@ import {
 import { Category } from './category.entity';
 import { OrderItem } from './order-item.entity';
 
-@Entity({ name: 'menu_items' })
-export class MenuItem {
+@Entity({ name: 'menu_items' }) // legacy schema name
+@Index(['categoryId'])
+export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ name: 'category_id', type: 'int' })
   categoryId: number;
 
-  @ManyToOne(() => Category, (category) => category.menuItems, { eager: true })
+  @ManyToOne(() => Category, (category) => category.products, { eager: true })
   @JoinColumn({ name: 'category_id' })
   category: Category;
 
@@ -37,6 +39,6 @@ export class MenuItem {
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
-  @OneToMany(() => OrderItem, (orderItem) => orderItem.menuItem)
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
   orderItems: OrderItem[];
 }

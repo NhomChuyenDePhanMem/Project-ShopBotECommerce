@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { CustomerOrder } from './order.entity';
 
-export type PaymentMethod = 'cash' | 'card' | 'transfer' | 'e_wallet';
+export type PaymentMethod = 'cod' | 'vnpay' | 'momo' | 'stripe';
 export type PaymentStatus = 'success' | 'failed' | 'refunded';
 
 @Entity({ name: 'payments' })

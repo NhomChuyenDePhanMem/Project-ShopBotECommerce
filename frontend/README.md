@@ -1,29 +1,59 @@
-# Frontend - ShopBot Restaurant Dashboard (React + TypeScript + Vite)
+# Frontend — ShopBot Ecommerce
 
-Frontend hien tai la dashboard van hanh nha hang, goi API tu backend NestJS.
+Ứng dụng React + TypeScript + Vite cho ShopBot (TMĐT + chatbot).
 
-## Tinh nang man hinh
+## Cấu trúc thư mục `src/`
 
-- `Menu & Danh muc`: CRUD danh muc + them/xoa menu item.
-- `Man hinh bep`: hien thi don theo trang thai (`pending`, `processing`, `served`, `paid`, `cancelled`) va doi trang thai don.
-- `Ban & Dat ban`: danh sach ban + doi trang thai ban + tao/doi trang thai dat ban.
-- `Nguoi dung`: dang nhap admin de goi `users API`, tao user, xoa user.
+| Đường dẫn | Mục đích |
+|-----------|----------|
+| `main.tsx` | Mount React, `ErrorBoundary`. |
+| `App.tsx` | Toàn bộ UI và state (tab theo role); gọi `services/*`. |
+| `App.css` / `index.css` | Style (Tailwind + custom). |
+| `lib/apiClient.ts` | `fetch`: Bearer, parse lỗi JSON Nest, `HttpApiError`, mạng. |
+| `lib/errors.ts` | `getErrorMessage` cho UI/hook. |
+| `lib/formatVnd.ts` | Định dạng tiền VND. |
+| `types/navigation.ts` | Tab (`AppView`), vai (`UserRole`), parse JWT, nhãn tiếng Việt. |
+| `hooks/useAsyncAction.ts` | `isBusy` + `errorMessage` + `runAsync` cho form/nút async. |
+| `services/*.ts` | Một file ≈ một nhóm endpoint backend (auth, cart, orders, …). |
+| `components/` | Component dùng lại (vd. `ErrorBoundary`). |
 
-## Chay local
+**Ghi chú:** Chưa dùng react-router; điều hướng bằng state `activeView` trong `App.tsx` (đủ cho MVP).
+
+## Quy ước nhanh (team)
+
+- **Tên:** `accessToken`, `currentUser`, `activeView`, `catalogFilters` — tránh `p` / `o` / `me` mơ hồ trong UI chính.
+- **DRY:** `formatVnd`, `requireLoginAccessToken`, `formatChatbotReplyForDisplay`, `getErrorMessage`.
+- **Type-only import:** bật `verbatimModuleSyntax` — dùng `import type { … }` cho kiểu thuần.
+
+## UX & responsive
+
+- Hệ thống lớp `sb-*` trong `src/index.css`: nút tối thiểu ~44px chiều cao trên mobile, `touch-manipulation`, `focus-visible` ring, trạng thái `active` nhẹ.
+- Lưới catalog `1 → 2 → 3` cột; tab điều hướng cuộn ngang trên điện thoại; form/chat xếp cột trên mobile, hàng trên `sm+`.
+- Font **system stack** (không tải Inter ngoài) để first paint nhanh hơn.
+
+## Luồng chính
+
+- Đăng nhập theo role: `customer`, `seller`, `admin`
+- Danh mục sản phẩm (lọc / tìm kiếm)
+- Giỏ hàng và checkout (gọi API `cart`, `orders`, `payments`)
+- Theo dõi đơn và thao tác theo vai (xác nhận / giao hàng / hoàn tất / hủy)
+- Chatbot tư vấn
+- Quản trị người dùng (chỉ **admin**)
+
+## Chạy dev
 
 ```bash
 npm install
 npm run dev
 ```
 
-Mac dinh goi API tai `http://localhost:3000/api`.
+Tùy chọn — file `.env`:
 
-```bash
-# Windows PowerShell
-$env:VITE_API_BASE_URL="http://localhost:3000/api"; npm run dev
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
-## Build va lint
+## Build & lint
 
 ```bash
 npm run build

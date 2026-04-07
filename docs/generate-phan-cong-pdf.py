@@ -110,10 +110,21 @@ def main():
         pdf,
         w,
         6,
-        "Đề tài: Hệ thống Quản lý Quán ăn (REST API + Web)",
+        "Đề tài: ShopBot E-Commerce (REST API + Web + Chatbot AI)",
         font="ArialUni",
         style="",
         size=10,
+        align="C",
+        wrapmode=WrapMode.WORD,
+    )
+    safe_multi_cell(
+        pdf,
+        w,
+        6,
+        "Quy mô nhóm: 6 thành viên (theo đề đăng ký). File đề chính: docs/de-tai/shopbot-summary.docx",
+        font="ArialUni",
+        style="",
+        size=9,
         align="C",
         wrapmode=WrapMode.WORD,
     )
@@ -123,8 +134,8 @@ def main():
         pdf,
         w,
         4.5,
-        "Gợi ý công nghệ: PostgreSQL, backend REST (NestJS hoặc tương đương), frontend React/Vite. "
-        "Phân công có thể điều chỉnh theo tiến độ nhóm.",
+        "Công nghệ: PostgreSQL, NestJS (REST), React/Vite, Docker Compose; tài liệu thiết kế CSDL: docs/design/schema.sql. "
+        "Chi tiết từng MSSV: assignments/<MSSV>/SCOPE.txt. Phân công có thể điều chỉnh theo tiến độ nhóm.",
         font="ArialUni",
         style="",
         size=8,
@@ -142,12 +153,12 @@ def main():
         wrapmode=WrapMode.WORD,
     )
     summary_lines = [
-        "1 — 1721031099 — Vũ Đình Mạnh — DevOps/DB, API bàn & đặt bàn (dining_tables, reservations).",
+        "1 — 1721031099 — Vũ Đình Mạnh — DevOps/DB: Docker Compose, PostgreSQL, db:init + schema.sql.",
         "2 — 1721031693 — Huỳnh Minh Tiến — Auth (JWT/bcrypt), roles, users.",
-        "3 — 1721031203 — Nguyễn Tiến Đạt — Menu: categories, menu_items (CRUD).",
-        "4 — 1721031524 — Nguyễn Viết Quốc Anh — Đơn: orders, order_items, trạng thái đơn.",
-        "5 — 1721031448 — Nguyễn Mai Quốc Khánh — payments + giao diện thu ngân.",
-        "6 — 1721031423 — Trần Quang Huy — FE quản lý/bếp/đặt bàn, README & demo.",
+        "3 — 1721031203 — Nguyễn Tiến Đạt — Catalog: categories + products (bảng menu_items).",
+        "4 — 1721031524 — Nguyễn Viết Quốc Anh — Đơn: orders, order_items, luồng trạng thái giao hàng.",
+        "5 — 1721031448 — Nguyễn Mai Quốc Khánh — payments + giao diện checkout / thanh toán.",
+        "6 — 1721031423 — Trần Quang Huy — FE React: catalog, giỏ, đơn, admin user, README & demo.",
     ]
     for s in summary_lines:
         safe_multi_cell(
@@ -169,9 +180,9 @@ def main():
         (
             "1. MSSV 1721031099 — Vũ Đình Mạnh",
             [
-                "DevOps & nền tảng: Docker Compose, PostgreSQL, khởi tạo cấu trúc repo (backend/frontend).",
-                "Chạy migration/seed từ docs/design/schema.sql; hướng dẫn môi trường chạy trên máy nhóm.",
-                "Phát triển API quản lý bàn và đặt bàn: dining_tables, reservations.",
+                "DevOps & nền tảng: Docker Compose, PostgreSQL, cấu trúc repo (backend/frontend).",
+                "Khởi tạo DB từ docs/design/schema.sql (npm run db:init); hướng dẫn môi trường nhóm.",
+                "Đảm bảo README root và docker-compose chạy được trên máy cả nhóm.",
             ],
         ),
         (
@@ -185,31 +196,30 @@ def main():
         (
             "3. MSSV 1721031203 — Nguyễn Tiến Đạt",
             [
-                "Module Menu: API categories và menu_items (CRUD).",
-                "Xử lý trường is_available; liên kết với order_items khi tạo đơn.",
+                "Catalog: API /products và categories (dữ liệu bảng menu_items, entity Product).",
+                "is_available; liên kết order_items qua productId (FK menu_item_id).",
             ],
         ),
         (
             "4. MSSV 1721031524 — Nguyễn Viết Quốc Anh",
             [
-                "Module Đơn hàng: API orders + order_items, giao dịch DB (transaction).",
-                "Chuyển trạng thái đơn: pending → processing → served → paid/cancelled.",
-                "Phối hợp luồng bếp / thu ngân (theo nghiệp vụ đã thiết kế).",
+                "Module đơn hàng: API orders + order_items, transaction khi tạo đơn.",
+                "Luồng trạng thái: pending → confirmed → packing → shipping → done / cancelled.",
+                "Phối hợp seller (confirm/ship) và customer (complete/cancel) qua REST.",
             ],
         ),
         (
             "5. MSSV 1721031448 — Nguyễn Mai Quốc Khánh",
             [
-                "Module Thanh toán: API payments (cash, card, transfer, e_wallet) gắn với order.",
-                "Frontend khu vực thu ngân: tạo đơn, chọn món, thanh toán, trạng thái bàn.",
+                "Module thanh toán: API payments (cod, vnpay, momo, stripe) gắn với order.",
+                "Frontend: checkout, chọn phương thức thanh toán sau khi tạo đơn.",
             ],
         ),
         (
             "6. MSSV 1721031423 — Trần Quang Huy",
             [
-                "Frontend quản lý: menu/danh mục, người dùng (nếu có màn hình).",
-                "Màn hình bếp: danh sách đơn theo trạng thái; màn hình đặt bàn / bàn.",
-                "README hướng dẫn cài đặt & chạy; hỗ trợ slide / kịch bản demo.",
+                "Frontend React: catalog, giỏ hàng, đơn, chatbot, quản trị user (seller/admin).",
+                "README hướng dẫn cài đặt & chạy; hỗ trợ slide / kịch bản demo video.",
             ],
         ),
     ]
@@ -252,7 +262,7 @@ def main():
     for line in [
         "• Thống nhất stack, convention code, quy tắc Git (branch, PR, code review).",
         "• Họp định kỳ: đồng bộ API và giao diện; cập nhật tài liệu nếu lệch thiết kế.",
-        "• Kiểm thử luồng nghiệp vụ: đặt món → bếp → thanh toán; sửa lỗi tập thể.",
+        "• Kiểm thử luồng TMĐT: xem hàng → giỏ → đơn → thanh toán → chatbot; sửa lỗi tập thể.",
         "• Hoàn thiện báo cáo, slide, video demo (nếu giảng viên yêu cầu).",
     ]:
         safe_multi_cell(
@@ -266,7 +276,8 @@ def main():
         )
 
     pdf.output(str(OUT_PDF))
-    print("Đã tạo:", OUT_PDF)
+    # ASCII-only: Windows cp1258 console may fail on Vietnamese print()
+    print("OK wrote:", OUT_PDF.resolve())
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 Nguyễn Viết Quốc Anh — MSSV 1721031524
-Nhánh Git: feature/1721031524-orders-order-items
+Nhánh Git (tham chiếu): feature/1721031524-orders-order-items
 Đề tài nhóm: ShopBot — docs/de-tai/shopbot-summary.docx | Tài liệu: docs/README.md | assignments/README.md
 
-Phạm vi:
-- Module đơn hàng: API orders + order_items, giao dịch DB (transaction).
-- Chuyển trạng thái đơn: pending → processing → served → paid/cancelled.
-- Phối hợp luồng bếp / thu ngân.
+Phạm vi hiện tại (ecommerce):
+- Module đơn hàng: API `orders` + `order_items`, transaction khi tạo đơn.
+- Trạng thái: `pending` → `confirmed` → `packing` → `shipping` → `done` / `cancelled` (seller + customer endpoints).
+- Item dùng `productId` (FK cột `menu_item_id` trong DB).

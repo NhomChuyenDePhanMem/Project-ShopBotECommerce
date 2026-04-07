@@ -4,14 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
-import { DiningTable } from './entities/dining-table.entity';
-import { MenuItem } from './entities/menu-item.entity';
-import { Reservation } from './entities/reservation.entity';
+import { Product } from './entities/product.entity';
 import { Role } from './entities/role.entity';
 import { User } from './entities/user.entity';
 
-const DEFAULT_ROLES = ['admin', 'cashier', 'kitchen_staff'] as const;
-const DEFAULT_CATEGORIES = ['Mon chinh', 'Mon an nhe', 'Do uong'] as const;
+const DEFAULT_ROLES = ['admin', 'seller', 'customer'] as const;
+const DEFAULT_CATEGORIES = ['Phone', 'Laptop', 'Accessory'] as const;
 
 @Injectable()
 export class SeedService implements OnModuleInit {
@@ -24,20 +22,15 @@ export class SeedService implements OnModuleInit {
     private readonly users: Repository<User>,
     @InjectRepository(Category)
     private readonly categories: Repository<Category>,
-    @InjectRepository(MenuItem)
-    private readonly menuItems: Repository<MenuItem>,
-    @InjectRepository(DiningTable)
-    private readonly tables: Repository<DiningTable>,
-    @InjectRepository(Reservation)
-    private readonly reservations: Repository<Reservation>,
+    @InjectRepository(Product)
+    private readonly products: Repository<Product>,
     private readonly config: ConfigService,
   ) {}
 
   async onModuleInit(): Promise<void> {
     await this.seedRoles();
     await this.seedBootstrapAdmin();
-    await this.seedCatalogAndTables();
-    await this.seedReservations();
+    await this.seedCatalog();
   }
 
   private async seedRoles(): Promise<void> {
@@ -51,35 +44,68 @@ export class SeedService implements OnModuleInit {
   }
 
   private async seedBootstrapAdmin(): Promise<void> {
-    const adminRole = await this.roles.findOne({ where: { name: 'admin' } });
-    if (!adminRole) {
-      return;
-    }
-    const username = this.config.get<string>('SEED_ADMIN_USERNAME', 'admin01');
-    const userCount = await this.users.count();
-    if (userCount > 0) {
-      return;
-    }
-    const plain = this.config.get<string>('SEED_ADMIN_PASSWORD', 'Admin@123');
-    const passwordHash = await bcrypt.hash(plain, 10);
-    await this.users.save(
-      this.users.create({
-        roleId: adminRole.id,
+    const roleRows = await this.roles.find();
+    const roleByName = new Map(roleRows.map((r) => [r.name, r]));
+    const defaults = [
+      {
+        role: 'admin',
+        username: this.config.get<string>('SEED_ADMIN_USERNAME', 'admin01'),
+        password: this.config.get<string>('SEED_ADMIN_PASSWORD', 'Admin@123'),
         fullName: this.config.get<string>(
           'SEED_ADMIN_FULL_NAME',
           'Quản trị (seed)',
         ),
-        username,
-        passwordHash,
-        phone: null,
-      }),
-    );
-    this.logger.log(
-      `Đã tạo tài khoản seed: username=${username} (đổi mật khẩu sau lần đầu đăng nhập)`,
-    );
+      },
+      {
+        role: 'seller',
+        username: this.config.get<string>('SEED_SELLER_USERNAME', 'seller01'),
+        password: this.config.get<string>('SEED_SELLER_PASSWORD', 'Seller@123'),
+        fullName: this.config.get<string>(
+          'SEED_SELLER_FULL_NAME',
+          'Người bán (seed)',
+        ),
+      },
+      {
+        role: 'customer',
+        username: this.config.get<string>(
+          'SEED_CUSTOMER_USERNAME',
+          'customer01',
+        ),
+        password: this.config.get<string>(
+          'SEED_CUSTOMER_PASSWORD',
+          'Customer@123',
+        ),
+        fullName: this.config.get<string>(
+          'SEED_CUSTOMER_FULL_NAME',
+          'Khách hàng (seed)',
+        ),
+      },
+    ];
+
+    for (const row of defaults) {
+      const role = roleByName.get(row.role);
+      if (!role) continue;
+      const exists = await this.users.exist({
+        where: { username: row.username },
+      });
+      if (exists) continue;
+      const passwordHash = await bcrypt.hash(row.password, 10);
+      await this.users.save(
+        this.users.create({
+          roleId: role.id,
+          fullName: row.fullName,
+          username: row.username,
+          passwordHash,
+          phone: null,
+        }),
+      );
+      this.logger.log(
+        `Đã tạo tài khoản seed: username=${row.username} role=${row.role}`,
+      );
+    }
   }
 
-  private async seedCatalogAndTables(): Promise<void> {
+  private async seedCatalog(): Promise<void> {
     const catCount = await this.categories.count();
     if (catCount === 0) {
       const categoryRows = DEFAULT_CATEGORIES.map((name) =>
@@ -89,65 +115,52 @@ export class SeedService implements OnModuleInit {
       this.logger.log('Đã seed categories mặc định');
     }
 
-    const tableCount = await this.tables.count();
-    if (tableCount === 0) {
-      await this.tables.save(
-        this.tables.create([
-          { tableCode: 'T01', capacity: 2, status: 'available' },
-          { tableCode: 'T02', capacity: 4, status: 'available' },
-          { tableCode: 'T03', capacity: 6, status: 'reserved' },
-          { tableCode: 'T04', capacity: 4, status: 'available' },
-        ]),
-      );
-      this.logger.log('Đã seed dining tables mặc định');
-    }
-
-    const itemCount = await this.menuItems.count();
+    const itemCount = await this.products.count();
     if (itemCount > 0) {
       return;
     }
 
     const categories = await this.categories.find();
     const catByName = new Map(categories.map((row) => [row.name, row.id]));
-    const menu = [
+    const catalog = [
       {
-        category: 'Mon chinh',
-        name: 'Com ga nuong',
-        description: 'Com trang an kem ga nuong sot mat ong',
-        price: '55000.00',
+        category: 'Phone',
+        name: 'iPhone 15 128GB',
+        description: 'Flagship Apple, camera dep, hieu nang on dinh',
+        price: '18990000.00',
       },
       {
-        category: 'Mon chinh',
-        name: 'Bun bo Hue',
-        description: 'Bun bo cay nhe, nhieu topping',
-        price: '60000.00',
+        category: 'Phone',
+        name: 'Samsung Galaxy S24',
+        description: 'Android cao cap, man hinh dep, pin tot',
+        price: '17990000.00',
       },
       {
-        category: 'Mon an nhe',
-        name: 'Khoai tay chien',
-        description: 'Khoai tay chien gion',
-        price: '30000.00',
+        category: 'Laptop',
+        name: 'MacBook Air M3',
+        description: 'Nhe, pin lau, phu hop hoc tap va cong viec',
+        price: '26990000.00',
       },
       {
-        category: 'Do uong',
-        name: 'Tra dao cam sa',
-        description: 'Tra dao tuoi kem cam sa',
-        price: '35000.00',
+        category: 'Laptop',
+        name: 'Asus ROG Zephyrus G14',
+        description: 'Laptop hieu nang cao cho gaming va sang tao',
+        price: '32990000.00',
       },
       {
-        category: 'Do uong',
-        name: 'Ca phe den',
-        description: 'Ca phe den da',
-        price: '25000.00',
+        category: 'Accessory',
+        name: 'AirPods Pro 2',
+        description: 'Tai nghe chong on, ket noi nhanh',
+        price: '5390000.00',
       },
     ];
-    const rows = menu
+    const rows = catalog
       .map((item) => {
         const categoryId = catByName.get(item.category);
         if (!categoryId) {
           return null;
         }
-        return this.menuItems.create({
+        return this.products.create({
           categoryId,
           name: item.name,
           description: item.description,
@@ -155,42 +168,10 @@ export class SeedService implements OnModuleInit {
           isAvailable: true,
         });
       })
-      .filter((item): item is MenuItem => item !== null);
+      .filter((item): item is Product => item !== null);
     if (rows.length > 0) {
-      await this.menuItems.save(rows);
-      this.logger.log('Đã seed menu items mặc định');
+      await this.products.save(rows);
+      this.logger.log('Đã seed products mặc định');
     }
-  }
-
-  private async seedReservations(): Promise<void> {
-    const reservationCount = await this.reservations.count();
-    if (reservationCount > 0) {
-      return;
-    }
-    const tables = await this.tables.find({ order: { id: 'ASC' } });
-    if (tables.length < 2) {
-      return;
-    }
-    await this.reservations.save(
-      this.reservations.create([
-        {
-          tableId: tables[0].id,
-          customerName: 'Nguyen Van C',
-          customerPhone: '0911222333',
-          reservedTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
-          partySize: Math.min(2, tables[0].capacity),
-          status: 'booked',
-        },
-        {
-          tableId: tables[1].id,
-          customerName: 'Tran Thi D',
-          customerPhone: '0944555666',
-          reservedTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
-          partySize: Math.min(4, tables[1].capacity),
-          status: 'booked',
-        },
-      ]),
-    );
-    this.logger.log('Đã seed reservations mặc định');
   }
 }

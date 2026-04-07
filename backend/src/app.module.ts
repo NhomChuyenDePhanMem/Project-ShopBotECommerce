@@ -14,9 +14,10 @@ import { ChatbotModule } from './modules/chatbot/chatbot.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { CartModule } from './modules/cart/cart.module';
 import { DiningTablesModule } from './modules/dining-tables/dining-tables.module';
-import { ReservationsModule } from './modules/reservations/reservations.module';
 import { MenuModule } from './modules/menu/menu.module';
+import { ReservationsModule } from './modules/reservations/reservations.module';
 
 @Module({
   imports: [
@@ -42,6 +43,13 @@ import { MenuModule } from './modules/menu/menu.module';
         autoLoadEntities: true,
         synchronize:
           configService.get<string>('TYPEORM_SYNC', 'true') === 'true',
+        extra: {
+          max:
+            Number.parseInt(
+              configService.get<string>('DB_POOL_MAX', '10'),
+              10,
+            ) || 10,
+        },
       }),
       inject: [ConfigService],
     }),
@@ -49,11 +57,12 @@ import { MenuModule } from './modules/menu/menu.module';
     AuthModule,
     UsersModule,
     ProductsModule,
-    OrdersModule,
-    PaymentsModule,
     MenuModule,
+    CartModule,
     DiningTablesModule,
     ReservationsModule,
+    OrdersModule,
+    PaymentsModule,
     ReviewsModule,
     NotificationsModule,
     ChatbotModule,

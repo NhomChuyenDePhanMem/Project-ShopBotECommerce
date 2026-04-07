@@ -1,48 +1,39 @@
-# System Architecture Diagram — Mini project Quản lý quán ăn
+# System Architecture — ShopBot E-Commerce
 
-> **Phụ lục** trong repo **ShopBot E-Commerce** (đề tài: [de-tai/shopbot-summary.docx](../de-tai/shopbot-summary.docx)). Mục lục tài liệu: [docs/README.md](../README.md).
+> Đề tài: [de-tai/shopbot-summary.docx](../de-tai/shopbot-summary.docx). Mục lục: [docs/README.md](../README.md).
 
-## Kiến trúc đề xuất: 3-Tier Architecture + Layered Monolith
+## Kiến trúc đề xuất: 3-Tier + monolith tầng ứng dụng
 
-Kien truc 3 lop phu hop voi mini project vi de trien khai, de bao tri, nhom co the phan chia cong viec ro rang:
+- **Presentation layer**: React (Vite) — khách, người bán, quản trị.
+- **Application layer**: NestJS REST API — auth, catalog, giỏ, đơn, thanh toán, chatbot.
+- **Data layer**: PostgreSQL.
 
-- **Presentation Layer**: Web UI cho thu ngan, quan ly, va bep.
-- **Application Layer**: Backend API xu ly nghiep vu (don hang, ban, mon an, thanh toan, ton kho nhe).
-- **Data Layer**: Co so du lieu quan he (MySQL/PostgreSQL).
+### Lý do
 
-### Ly do chon kien truc nay
+1. Đủ gọn cho môn học, dễ triển khai và bảo trì.
+2. Có thể tách dịch vụ sau nếu quy mô tăng.
+3. Tách UI, nghiệp vụ và DB rõ ràng, dễ kiểm thử.
 
-1. **Don gian va nhanh**: De hoan thanh trong thoi gian mon hoc.
-2. **De mo rong**: Co the tach dần thanh microservices khi quy mo lon.
-3. **De test**: Tach biet UI, business logic, va DB.
-4. **Phu hop doi ngu sinh vien**: Moi thanh vien phu trach mot lop/chuc nang.
-
-## So do kien truc (Mermaid)
+## Sơ đồ module (Mermaid)
 
 ```mermaid
 flowchart LR
-    A[Khach/Thu ngan] --> B[Frontend Web App]
-    C[Quan ly] --> B
-    D[Nhan vien bep] --> B
+    A[Khách hàng] --> B[Frontend Web]
+    C[Người bán / Admin] --> B
 
     B --> E[Backend REST API]
-    E --> F[(Relational Database)]
+    E --> F[(PostgreSQL)]
 
-    E --> G[Auth Module]
-    E --> H[Order Module]
-    E --> I[Menu Module]
-    E --> J[Table Reservation Module]
-    E --> K[Payment Module]
+    E --> G[Auth & Users]
+    E --> H[Products & Categories]
+    E --> I[Cart]
+    E --> J[Orders]
+    E --> K[Payments]
+    E --> L[Chatbot]
 ```
 
-## Thanh phan chinh
+## Thành phần chính
 
-- **Frontend**: Hien thi menu, tao don, cap nhat trang thai don, quan ly mon.
-- **Backend API**:
-  - `Auth`: Dang nhap va phan quyen.
-  - `Menu`: CRUD mon an, danh muc.
-  - `Order`: Tao va xu ly don hang.
-  - `Table`: Quan ly ban va dat ban.
-  - `Payment`: Ghi nhan thanh toan.
-- **Database**: Luu du lieu co cau truc va dam bao toan ven giao dich.
-
+- **Frontend**: đăng nhập theo vai trò, xem catalog, giỏ, đơn, chatbot, quản trị user (seller/admin).
+- **Backend**: JWT + roles; API sản phẩm; giỏ (in-memory demo); đơn hàng và luồng trạng thái giao hàng; thanh toán; chatbot tư vấn sản phẩm.
+- **Database**: schema quan hệ trong `schema.sql`, đồng bộ với TypeORM entities.

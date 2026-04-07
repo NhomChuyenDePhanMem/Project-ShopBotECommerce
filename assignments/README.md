@@ -7,4 +7,6 @@
 | **Chạy dự án** | [README gốc](../README.md) |
 | **Mục lục tài liệu** | [docs/README.md](../docs/README.md) |
 
-Mỗi thành viên có thư mục `assignments/<MSSV>/` với file `SCOPE.txt` mô tả phạm vi và nhánh làm việc. Module bàn / menu / đơn / thanh toán bám **phụ lục** [docs/design/](../docs/design/); Auth và TMĐT bám **trục ShopBot** trong `docs/SShopBot_Design.md` và code `backend/` / `frontend/`.
+Mỗi thành viên có thư mục `assignments/<MSSV>/` với `SCOPE.txt` (phạm vi **hiện tại**, bám code `backend/` và `frontend/`). Tên nhánh Git có thể giữ prefix MSSV từ giai đoạn trước; **nghiệp vụ repo là TMĐT**, không còn API bàn / đặt bàn / module menu riêng.
+
+Thiết kế CSDL: [docs/design/](../docs/design/).

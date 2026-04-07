@@ -2,6 +2,8 @@ node_modules/
 dist/
 coverage/
 .env
+backend/.env
+frontend/.env
 .DS_Store
 *.log
 .idea/

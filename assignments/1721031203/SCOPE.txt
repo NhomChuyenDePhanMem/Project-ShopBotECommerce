@@ -1,7 +1,8 @@
 Nguyễn Tiến Đạt — MSSV 1721031203
-Nhánh Git: feature/1721031203-menu-api
+Nhánh Git (tham chiếu): feature/1721031203-menu-api
 Đề tài nhóm: ShopBot — docs/de-tai/shopbot-summary.docx | Tài liệu: docs/README.md | assignments/README.md
 
-Phạm vi:
-- Module Menu: API categories và menu_items (CRUD).
-- Xử lý trường is_available; liên kết với order_items khi tạo đơn.
+Phạm vi hiện tại (ecommerce):
+- Catalog sản phẩm: API `/products`, `/products/categories` (dữ liệu bảng `menu_items` + `categories`, entity `Product`).
+- Trường `is_available`, liên kết `order_items` khi tạo đơn (`productId`).
+- (Đã gỡ) module REST `/menu/*` riêng — không còn trong repo.

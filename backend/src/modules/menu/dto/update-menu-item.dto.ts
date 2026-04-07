@@ -1,7 +1,7 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsInt,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPositive,
@@ -10,27 +10,30 @@ import {
 } from 'class-validator';
 
 export class UpdateMenuItemDto {
+  @ApiPropertyOptional({ example: 2 })
   @IsOptional()
   @IsInt()
   @IsPositive()
   categoryId?: number;
 
+  @ApiPropertyOptional({ example: 'Com tam suon bi cha' })
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @MaxLength(120)
   name?: string;
 
+  @ApiPropertyOptional({ example: 'Them do chua, khong hanh' })
   @IsOptional()
   @IsString()
-  @MaxLength(2000)
   description?: string;
 
+  @ApiPropertyOptional({ example: 78000 })
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsNumber({ allowInfinity: false, allowNaN: false })
   @IsPositive()
   price?: number;
 
+  @ApiPropertyOptional({ example: false })
   @IsOptional()
   @IsBoolean()
   isAvailable?: boolean;

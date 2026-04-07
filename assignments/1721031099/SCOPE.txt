@@ -1,8 +1,8 @@
 Vũ Đình Mạnh — MSSV 1721031099
-Nhánh Git: feature/1721031099-devops-docker-tables-reservations
+Nhánh Git (tham chiếu): feature/1721031099-devops-docker-tables-reservations
 Đề tài nhóm: ShopBot — docs/de-tai/shopbot-summary.docx | Tài liệu: docs/README.md | assignments/README.md
 
-Phạm vi:
-- DevOps & nền tảng: Docker Compose, PostgreSQL, khởi tạo cấu trúc repo (backend/frontend).
-- Migration/seed từ docs/design/schema.sql; hướng dẫn môi trường chạy trên máy nhóm.
-- API quản lý bàn và đặt bàn: dining_tables, reservations.
+Phạm vi hiện tại (ecommerce):
+- DevOps & nền tảng: Docker Compose, PostgreSQL, cấu trúc repo (backend/frontend).
+- Khởi tạo DB: `docs/design/schema.sql` qua `backend` → `npm run db:init`; hướng dẫn môi trường chạy nhóm.
+- (Đã gỡ) API bàn / đặt bàn — không còn trong codebase.

@@ -1,11 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationStatusDto } from './dto/update-reservation-status.dto';
@@ -16,8 +16,8 @@ export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
 
   @Get()
-  findAll(@Query('activeOnly') activeOnly?: string) {
-    return this.reservationsService.findAll(activeOnly === 'true');
+  findAll() {
+    return this.reservationsService.findAll();
   }
 
   @Get(':id')
@@ -36,5 +36,10 @@ export class ReservationsController {
     @Body() dto: UpdateReservationStatusDto,
   ) {
     return this.reservationsService.updateStatus(id, dto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.reservationsService.remove(id);
   }
 }

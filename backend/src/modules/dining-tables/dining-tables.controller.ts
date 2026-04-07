@@ -1,33 +1,33 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
+import { DiningTablesService } from './dining-tables.service';
 import { CreateDiningTableDto } from './dto/create-dining-table.dto';
 import { UpdateDiningTableStatusDto } from './dto/update-dining-table-status.dto';
-import { DiningTablesService } from './dining-tables.service';
 
 @Controller('dining-tables')
 export class DiningTablesController {
-  constructor(private readonly diningTablesService: DiningTablesService) {}
+  constructor(private readonly tablesService: DiningTablesService) {}
 
   @Get()
-  findAll(@Query('status') status?: 'available' | 'occupied' | 'reserved') {
-    return this.diningTablesService.findAll(status);
+  findAll() {
+    return this.tablesService.findAll();
   }
 
   @Get(':id')
   findById(@Param('id') id: string) {
-    return this.diningTablesService.findById(id);
+    return this.tablesService.findById(id);
   }
 
   @Post()
   create(@Body() dto: CreateDiningTableDto) {
-    return this.diningTablesService.create(dto);
+    return this.tablesService.create(dto);
   }
 
   @Patch(':id/status')
@@ -35,6 +35,11 @@ export class DiningTablesController {
     @Param('id') id: string,
     @Body() dto: UpdateDiningTableStatusDto,
   ) {
-    return this.diningTablesService.updateStatus(id, dto);
+    return this.tablesService.updateStatus(id, dto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.tablesService.remove(id);
   }
 }
