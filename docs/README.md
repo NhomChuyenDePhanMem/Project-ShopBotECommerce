@@ -1,7 +1,8 @@
 # Tài liệu dự án ShopBot — mục lục
 
 **Đề tài đăng ký:** [de-tai/shopbot-summary.docx](de-tai/shopbot-summary.docx) — nhóm **6** thành viên (GV chấp nhận).  
-**Code & chạy thử:** [README gốc](../README.md).
+**Code & chạy thử:** [README gốc](../README.md). **Bản đồ mã (FE/BE, RBAC):** [CODEMAP.md](CODEMAP.md).  
+**Repo GitHub:** [NhomChuyenDePhanMem/Project-ShopBotECommerce](https://github.com/NhomChuyenDePhanMem/Project-ShopBotECommerce). **Video demo YouTube:** [youtu.be/DTYRb54n_kw](https://youtu.be/DTYRb54n_kw).
 
 Trong repo, tên **SShopBot** là tên nền tảng dùng trong các file phân tích chi tiết; **ShopBot** là tên đề tài trên file đăng ký — cùng một hướng sản phẩm.
 

@@ -10,6 +10,13 @@
 | **Đề tài** | Theo file đăng ký: [de-tai/shopbot-summary.docx](de-tai/shopbot-summary.docx) (cùng các tài liệu trong `docs/`). |
 | **Nộp** | (1) GitHub repo đủ source, chạy được · (2) **Báo cáo PDF** · (3) **Video demo YouTube** |
 
+### Liên kết nộp bài (nhóm — cập nhật)
+
+| Nội dung | URL |
+|----------|-----|
+| **GitHub** | [https://github.com/NhomChuyenDePhanMem/Project-ShopBotECommerce](https://github.com/NhomChuyenDePhanMem/Project-ShopBotECommerce) |
+| **Video demo YouTube** | [https://youtu.be/DTYRb54n_kw](https://youtu.be/DTYRb54n_kw) |
+
 ### Hạn nộp (theo đề)
 
 | Bài | Hạn |
@@ -35,7 +42,7 @@
 | 8 | **Chương 5:** Kiểm thử (test case, kết quả) |
 | 9 | **Chương 6:** Kết quả & hướng phát triển |
 | 10 | Tài liệu tham khảo |
-| 11 | **Phụ lục:** link GitHub, link YouTube demo |
+| 11 | **Phụ lục:** link GitHub, link YouTube demo (dùng đúng URL trong mục *Liên kết nộp bài* phía trên) |
 
 ### Yêu cầu PDF
 
@@ -83,7 +90,7 @@
 | 3 | ShopBot: sơ đồ trong `docs/06_AI_System_Diagrams.md`; CSDL: `docs/design/erd.dbml`, `docs/design/schema.sql`, `design-patterns.md` |
 | 4 | Ảnh Postman/Swagger, màn hình React, trích code Auth / API demo |
 | 5 | `backend/test/*.e2e-spec.ts`, bảng test case thủ công + kết quả chạy |
-| Phụ lục | URL GitHub + YouTube |
+| Phụ lục | [GitHub nhóm](https://github.com/NhomChuyenDePhanMem/Project-ShopBotECommerce) · [YouTube demo](https://youtu.be/DTYRb54n_kw) |
 
 ---
 

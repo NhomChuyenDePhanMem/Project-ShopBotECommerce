@@ -4,6 +4,8 @@
 
 **Hữu ích vì:** gom **frontend (React)**, **backend (NestJS + PostgreSQL)** và **tích hợp AI** trong một repo có tài liệu thiết kế (`docs/`), phù hợp học tập, demo môn học hoặc làm nền mở rộng thật (thanh toán, vận chuyển, v.v.).
 
+**Mục tiêu định vị (gợi ý trình bày báo cáo):** đề tài / **bản demo có mã nguồn** — không phải sản phẩm thương mại hoàn chỉnh; trọng tâm là **luồng TMĐT + phân quyền + chatbot**, có thể mở rộng dần (deploy, thanh toán thật, v.v.).
+
 ---
 
 ## Mục lục
@@ -15,6 +17,8 @@
 - [Kiểm thử và build](#testing)
 - [Cấu trúc thư mục](#structure)
 - [Tài liệu liên quan](#docs)
+- [Video demo YouTube](#video-demo)
+- [Triển khai demo (deploy)](#deploy-demo)
 - [Đóng góp](#contributing)
 
 ---
@@ -23,9 +27,19 @@
 
 | Khía cạnh | Nội dung |
 |-----------|----------|
-| **Nghiệp vụ** | Đăng nhập JWT, catalog, giỏ, đơn hàng, thanh toán, đánh giá, thông báo, chatbot |
+| **Nghiệp vụ** | Đăng nhập JWT, catalog (phân trang), giỏ, đơn hàng, thanh toán, đánh giá, thông báo, chatbot |
+| **Admin** | Tổng quan thống kê (đơn / doanh thu), quản lý user, catalog qua API menu |
 | **Vai trò** | `customer`, `seller`, `admin` |
-| **Công nghệ** | React 19 + Vite + TypeScript + Tailwind; NestJS 11; PostgreSQL 16 |
+| **Công nghệ** | React 19 + Vite + TypeScript + Tailwind; NestJS 11; PostgreSQL 17 |
+
+---
+
+<h2 id="video-demo">Video demo YouTube</h2>
+
+- **Video demo (nộp môn / phụ lục báo cáo):** [https://youtu.be/DTYRb54n_kw](https://youtu.be/DTYRb54n_kw)
+- **Mã nguồn nhóm trên GitHub:** [https://github.com/NhomChuyenDePhanMem/Project-ShopBotECommerce](https://github.com/NhomChuyenDePhanMem/Project-ShopBotECommerce)
+
+Chi tiết kịch bản quay và checklist: [docs/demo-video-submission.md](docs/demo-video-submission.md).
 
 ---
 
@@ -58,6 +72,8 @@ docker compose up -d
 
 Đợi container `healthy` (khoảng vài giây). CSDL mặc định: `sshopbot`, user `postgres` (xem `docker-compose.yml`).
 
+**Nâng phiên bản PostgreSQL (Docker):** Khi đổi major version trên volume dữ liệu cũ, tránh chỉ đổi image rồi `compose up` mà không sao lưu. Nên `pg_dump` rồi khôi phục vào instance mới, hoặc dùng `pg_upgrade` theo tài liệu PostgreSQL. Trên **môi trường dev** có thể `docker compose down -v`, `docker compose up -d`, sau đó trong thư mục `backend` chạy lại `npm run db:init` và khởi động app để tạo lại schema và seed mẫu.
+
 ### 3. Backend
 
 ```bash
@@ -87,7 +103,7 @@ npm run dev
 ```
 
 Ứng dụng web: **http://localhost:5173** (hoặc cổng Vite in ra trên terminal).  
-Biến `VITE_API_BASE_URL` trong `frontend/.env` trỏ tới API (mặc định `http://localhost:3000/api`).
+Khi **`npm run dev`**, FE gọi API qua **`/api`** (Vite proxy tới `127.0.0.1:3000`) — đúng cả khi bạn mở bằng URL mạng LAN (`npm run dev -- --host`). Khi **`npm run build`** / deploy, dùng `VITE_API_BASE_URL` trỏ tới API thật (xem `frontend/.env.example`).
 
 ---
 
@@ -103,11 +119,19 @@ Biến `VITE_API_BASE_URL` trong `frontend/.env` trỏ tới API (mặc định 
 
 | Tên đăng nhập | Mật khẩu | Vai trò |
 |---------------|----------|---------|
-| `admin01` | `Admin@123` | Quản trị |
+| `admin01` | `Admin@123` | Quản trị hệ thống |
 | `seller01` | `Seller@123` | Người bán |
-| `customer01` | `![1775548879791](image/README/1775548879791.png)` | Khách hàng |
+| `customer01` | `Customer@123` | Khách hàng |
 
 Đổi mật khẩu seed: chỉnh `SEED_*` trong `backend/.env` trước lần seed đầu tiên.
+
+**Phân quyền (logic tóm tắt):**
+
+- **Quản trị hệ thống (`admin`)**: CRUD người dùng (`/users`), mọi thao tác đơn (xác nhận / giao như seller; hoàn tất / hủy như khách khi cần), chỉnh catalog (`/menu` có JWT).
+- **Người bán (`seller`)**: chỉnh catalog, xác nhận và giao đơn; không tab giỏ / quản trị user.
+- **Khách hàng (`customer`)**: xem catalog, giỏ, đặt hàng, đánh giá, hoàn tất / hủy đơn (luồng khách).
+
+Chi tiết từng màn hình nằm trong file `frontend/src/types/roleCapabilities.ts` và panel «Phân quyền truy cập theo vai trò» trên giao diện web. API thực tế kiểm tra JWT + `@Roles` trên NestJS.
 
 ### API (ví dụ với `curl`)
 
@@ -138,6 +162,14 @@ Trong `backend/.env`, cấu hình `CHATBOT_PROVIDER` và khóa API (`GEMINI_API_
 
 <h2 id="testing">Kiểm thử và build</h2>
 
+**Một lần chạy đủ (PowerShell, từ thư mục gốc repo):**
+
+```powershell
+cd backend; npm run build; npm test; npm run test:e2e; cd ../frontend; npm run lint; npm run build; cd ..
+```
+
+(macOS/Linux: tách lệnh hoặc dùng `&&` tương đương.)
+
 | Thành phần | Thư mục | Lệnh gợi ý |
 |------------|---------|------------|
 | Backend | `backend/` | `npm run build`, `npm run test`, `npm run test:e2e` |
@@ -153,7 +185,7 @@ Trong `backend/.env`, cấu hình `CHATBOT_PROVIDER` và khóa API (`GEMINI_API_
 Project-ShopBotECommerce/
 ├── backend/          # NestJS API
 ├── frontend/         # React + Vite
-├── docs/             # Tài liệu dự án, thiết kế CSDL, ERD
+├── docs/             # Tài liệu; xem docs/CODEMAP.md để điều hướng mã
 ├── docker-compose.yml
 └── README.md
 ```
@@ -164,11 +196,23 @@ Project-ShopBotECommerce/
 
 | Tài liệu | Mô tả |
 |----------|--------|
+| [docs/CODEMAP.md](docs/CODEMAP.md) | Bản đồ mã: FE/BE module, RBAC, thuật ngữ `menu_items` / `Product` |
 | [docs/README.md](docs/README.md) | Mục lục / báo cáo tổng hợp |
 | [docs/database.md](docs/database.md) | Bảo mật CSDL, backup, hiệu năng, mở rộng |
 | [docs/design/schema.sql](docs/design/schema.sql) | Schema PostgreSQL baseline |
 | [backend/README.md](backend/README.md) | Module API, biến môi trường, bảo mật HTTP |
 | [frontend/README.md](frontend/README.md) | Giao diện, build, UX |
+
+---
+
+<h2 id="deploy-demo">Triển khai demo (deploy)</h2>
+
+Đây là **gợi ý** cho demo / báo cáo; không bắt buộc cho chạy local.
+
+1. **PostgreSQL:** tạo instance (Railway, Supabase, Neon, VPS + Docker…) và lấy chuỗi kết nối `DATABASE_URL` / `DB_*`.
+2. **Backend:** build `backend`, đặt biến môi trường (JWT, DB, CORS `FRONTEND_ORIGIN`, tùy chọn OpenAI), chạy `npm run start:prod` hoặc PM2; mở cổng HTTPS qua reverse proxy nếu cần.
+3. **Frontend:** `npm run build` trong `frontend`, phục vụ thư mục `dist` (Vercel, Netlify, Nginx static); đặt `VITE_API_BASE_URL` trỏ tới URL API đã public.
+4. **Seed / schema:** lần đầu chạy production cần migration hoặc `init-from-schema` + seed theo quy trình trong `backend/README.md`.
 
 ---
 

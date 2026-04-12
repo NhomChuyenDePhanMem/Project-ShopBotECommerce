@@ -5,8 +5,8 @@
 - Tên dự án: ShopBot E-Commerce (TMĐT + chatbot AI)
 - Nhóm: 6 thành viên
 - Môn: Chuyên đề phát triển phần mềm
-- GitHub repo: `<dán link repo>`
-- YouTube video demo: `<dán link video>`
+- GitHub repo: [https://github.com/NhomChuyenDePhanMem/Project-ShopBotECommerce](https://github.com/NhomChuyenDePhanMem/Project-ShopBotECommerce)
+- YouTube video demo: [https://youtu.be/DTYRb54n_kw](https://youtu.be/DTYRb54n_kw)
 
 ## 2) Chuẩn bị trước khi quay (checklist)
 
