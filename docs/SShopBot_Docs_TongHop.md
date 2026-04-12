@@ -15,6 +15,8 @@
 
 **Phân công nhóm:** [phan-cong-nhom.pdf](phan-cong-nhom.pdf) (sinh từ [generate-phan-cong-pdf.py](generate-phan-cong-pdf.py)); chi tiết: [assignments/README.md](../assignments/README.md).
 
+**Mã nguồn & video demo (nộp bài):** [GitHub — Project-ShopBotECommerce](https://github.com/NhomChuyenDePhanMem/Project-ShopBotECommerce) · [YouTube — video demo](https://youtu.be/DTYRb54n_kw).
+
 ***
 
 ## 1. Giới thiệu Dự án
